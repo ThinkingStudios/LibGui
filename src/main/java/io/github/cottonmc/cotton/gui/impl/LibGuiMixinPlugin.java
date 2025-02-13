@@ -16,10 +16,11 @@ public final class LibGuiMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return switch (mixinClassName) {
-			case "io.github.cottonmc.impl.mixin.client.MinecraftClientMixin" -> IS_DEVELOPMENT.get();
-			default -> true;
-		};
+//		return switch (mixinClassName) {
+//			case "io.github.cottonmc.impl.mixin.client.MinecraftClientMixin" -> IS_DEVELOPMENT.get();
+//			default -> true;
+//		};
+		return true;
 	}
 
 	// Boilerplate below

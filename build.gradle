@@ -86,7 +86,7 @@ dependencies {
 	//modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 	//include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 
-	api(include("blue.endless:jankson:1.2.3"))
+	implementation(include("blue.endless:jankson:1.2.3"))
 
 	//include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
 
