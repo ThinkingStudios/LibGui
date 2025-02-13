@@ -1,8 +1,5 @@
 package io.github.cottonmc.cotton.gui.impl;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
@@ -10,10 +7,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.thinkingstudio.libgui_foxified.loader.FoxifiedLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public final class VisualLogger {
 	private void log(String message, Object[] params, Level level, Formatting formatting) {
 		logger.log(level, message, params);
 
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+		if (FoxifiedLoader.isDevelopmentEnvironment()) {
 			var text = Text.literal(clazz.getSimpleName() + '/');
 			text.append(Text.literal(level.name()).formatted(formatting));
 			text.append(Text.literal(": " + ParameterizedMessage.format(message, params)));
@@ -52,7 +52,7 @@ public final class VisualLogger {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public static void render(DrawContext context) {
 		var client = MinecraftClient.getInstance();
 		var textRenderer = client.textRenderer;

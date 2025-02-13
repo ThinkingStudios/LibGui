@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -19,6 +17,8 @@ import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.icon.Icon;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -164,7 +164,7 @@ public class WTabPanel extends WPanel {
 		tabRibbon.setSize(x, TAB_HEIGHT);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addPainters() {
 		super.addPainters();
@@ -228,7 +228,7 @@ public class WTabPanel extends WPanel {
 		 *
 		 * @param tooltip the tooltip builder
 		 */
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		public void addTooltip(TooltipBuilder tooltip) {
 			if (this.tooltip != null) {
 				this.tooltip.accept(tooltip);
@@ -318,7 +318,7 @@ public class WTabPanel extends WPanel {
 				if (!this.tooltip.isEmpty()) {
 					//noinspection Convert2Lambda
 					tooltip = new Consumer<TooltipBuilder>() {
-						@Environment(EnvType.CLIENT)
+						@OnlyIn(Dist.CLIENT)
 						@Override
 						public void accept(TooltipBuilder builder) {
 							builder.add(Tab.Builder.this.tooltip.toArray(new Text[0]));
@@ -349,7 +349,7 @@ public class WTabPanel extends WPanel {
 			return true;
 		}
 
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		@Override
 		public InputResult onClick(int x, int y, int button) {
 			super.onClick(x, y, button);
@@ -360,7 +360,7 @@ public class WTabPanel extends WPanel {
 			return InputResult.PROCESSED;
 		}
 
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		@Override
 		public InputResult onKeyPressed(int ch, int key, int modifiers) {
 			if (isActivationKey(ch)) {
@@ -371,7 +371,7 @@ public class WTabPanel extends WPanel {
 			return InputResult.IGNORED;
 		}
 
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		@Override
 		public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 			TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
@@ -416,13 +416,13 @@ public class WTabPanel extends WPanel {
 			}
 		}
 
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		@Override
 		public void addTooltip(TooltipBuilder tooltip) {
 			data.addTooltip(tooltip);
 		}
 
-		@Environment(EnvType.CLIENT)
+		@OnlyIn(Dist.CLIENT)
 		@Override
 		public void addNarrations(NarrationMessageBuilder builder) {
 			Text label = data.getTitle();
@@ -438,7 +438,7 @@ public class WTabPanel extends WPanel {
 	/**
 	 * Internal background painter instances for tabs.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	final static class Painters {
 		static final BackgroundPainter SELECTED_TAB = BackgroundPainter.createLightDarkVariants(
 				BackgroundPainter.createNinePatch(LibGuiCommon.id("textures/widget/tab/selected_light.png")).setTopPadding(2),

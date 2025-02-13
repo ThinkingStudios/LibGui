@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
@@ -9,6 +7,8 @@ import io.github.cottonmc.cotton.gui.impl.client.NinePatchTextureRendererImpl;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
 import juuxel.libninepatch.NinePatch;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.function.Consumer;
 
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  *
  * @since 4.0.0
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class NinePatchBackgroundPainter implements BackgroundPainter {
 	private final NinePatch<Identifier> ninePatch;
 	private int topPadding = 0;

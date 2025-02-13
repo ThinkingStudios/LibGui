@@ -1,6 +1,5 @@
 package io.github.cottonmc.test;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,6 +13,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+
+import net.neoforged.neoforge.network.IContainerFactory;
+import org.thinkingstudio.libgui_foxified.test.fabric.ExtendedScreenHandlerFactory;
+
 
 public class GuiItem extends Item {
 	public GuiItem(Settings settings) {

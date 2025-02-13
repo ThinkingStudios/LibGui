@@ -1,7 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.8.+'
+	id "dev.architectury.loom" version "1.9-SNAPSHOT"
 	id 'maven-publish'
-	id 'checkstyle'
+	//id 'checkstyle'
 }
 
 base {
@@ -12,8 +12,8 @@ version = "$project.mod_version+$project.minecraft_version"
 group = project.maven_group
 
 sourceSets {
-	javadoc {
-	}
+	//javadoc {
+	//}
 
 	testMod {
 		compileClasspath += main.compileClasspath
@@ -47,19 +47,24 @@ repositories {
 		}
 	}
 	maven {
-		url = "https://maven.terraformersmc.com/releases"
-		content {
-			includeGroup "com.terraformersmc"
-		}
+		name = 'NeoForged'
+		url = 'https://maven.neoforged.net/releases'
 	}
+	maven { url "https://maven.su5ed.dev/releases" }
+	maven { url "https://dl.cloudsmith.io/public/thinkingstudio/foxifiednetworking/maven/" }
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings loom.layered {
+		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+		mappings "dev.architectury:yarn-mappings-patch-neoforge:${project.yarn_patch}"
+	}
+	neoForge "net.neoforged:neoforge:${project.neoforge_version}"
+	modImplementation(include("me.textrue.foxified:FoxifiedNetworking:0.1.0alpha3+mc1.21.4"))
 
 	// True: module classes are used in public API classes/methods/fields
+	/*
 	def fabricApiModules = [
 			'fabric-api-base': true,
 			'fabric-lifecycle-events-v1': false,
@@ -76,37 +81,30 @@ dependencies {
 			modImplementation dependency
 		}
 	}
+	 */
 
-	modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-	include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+	//modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+	//include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 
-	include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
+	api(include("blue.endless:jankson:1.2.3"))
 
-	modCompileOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-		exclude group: 'net.fabricmc.fabric-api'
-		exclude group: 'net.fabricmc', module: 'fabric-loader'
-	}
+	//include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
 
 	// Test mod dependencies
 	testModImplementation sourceSets.main.output
-	modTestModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modTestModRuntimeOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-		exclude group: 'net.fabricmc.fabric-api'
-		exclude group: 'net.fabricmc', module: 'fabric-loader'
-	}
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
+	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "version": project.version
 	}
 }
 
 java {
 	withSourcesJar()
-	withJavadocJar()
+	//withJavadocJar()
 
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
@@ -124,11 +122,13 @@ jar {
 	from "CREDITS.txt", "LICENSE"
 }
 
+/*
 checkstyle {
 	configFile = rootProject.file('checkstyle.xml')
 	configProperties = [suppressions: rootProject.file('checkstyle.suppressions.xml').absolutePath]
 	toolVersion = '10.9.2'
 }
+
 
 def javadocBuildJar = tasks.register('javadocBuildJar', Jar) {
 	destinationDirectory = file('build/devlibs')
@@ -146,9 +146,9 @@ javadoc {
 				'io.github.cottonmc.cotton.gui.jd.PropertyTaglet'
 		tagletPath javadocBuildJar.get().archiveFile.get().asFile
 	}
-
-	exclude("**/impl/**")
-}
+	*/
+	//exclude("**/impl/**")
+//}
 
 // configure the maven publication
 publishing {

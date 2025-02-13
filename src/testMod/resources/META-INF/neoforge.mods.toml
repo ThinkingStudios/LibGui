@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "libgui_test"
+version = "${version}"
+displayName = "LibGuiFoxifiedTest"
+displayURL = "https://github.com/ThinkingStudio/LibGuiFoxified"
+credits = "Falkreon, Juuz"
+authors = "TexTrue, ThinkingStudio"
+description = '''
+Some example Guis to shake out errors
+'''
+logoFile = "assets/libgui-test/icon.png"
+
+[[dependencies.libgui_test]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.3,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.libgui_test]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.3,)"
+ordering = "NONE"
+side = "BOTH"
+

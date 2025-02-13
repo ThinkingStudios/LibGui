@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -13,6 +11,8 @@ import io.github.cottonmc.cotton.gui.impl.VisualLogger;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.ObservableProperty;
 import io.github.cottonmc.cotton.gui.widget.focus.FocusModel;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -163,7 +163,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseDown(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -179,7 +179,7 @@ public class WWidget {
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 * @since 1.5.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseDrag(int x, int y, int button, double deltaX, double deltaY) {
 		return InputResult.IGNORED;
 	}
@@ -191,7 +191,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseUp(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -204,7 +204,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onClick(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -218,7 +218,7 @@ public class WWidget {
 	 * @param verticalAmount   The scrolled vertical amount. Positive values are up and negative values are down.
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseScroll(int x, int y, double horizontalAmount, double verticalAmount) {
 		return InputResult.IGNORED;
 	}
@@ -231,7 +231,7 @@ public class WWidget {
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 * @since 1.5.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseMove(int x, int y) {
 		return InputResult.IGNORED;
 	}
@@ -242,7 +242,7 @@ public class WWidget {
 	 * @param ch the character typed
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onCharTyped(char ch) {
 		return InputResult.IGNORED;
 	}
@@ -252,7 +252,7 @@ public class WWidget {
 	 * @param key the GLFW scancode of the key
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onKeyPressed(int ch, int key, int modifiers) {
 		return InputResult.IGNORED;
 	}
@@ -262,7 +262,7 @@ public class WWidget {
 	 * @param key the GLFW scancode of the key
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onKeyReleased(int ch, int key, int modifiers) {
 		return InputResult.IGNORED;
 	}
@@ -327,7 +327,7 @@ public class WWidget {
 	 * @param mouseY  the X coordinate of the cursor
 	 * @since 2.0.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 	}
 
@@ -354,7 +354,7 @@ public class WWidget {
 	 * @param tX      the X coordinate of the tooltip
 	 * @param tY      the Y coordinate of the tooltip
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void renderTooltip(DrawContext context, int x, int y, int tX, int tY) {
 		TooltipBuilder builder = new TooltipBuilder();
 		addTooltip(builder);
@@ -414,7 +414,7 @@ public class WWidget {
 	 *
 	 * @param tooltip the builder to add tooltip lines to
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addTooltip(TooltipBuilder tooltip) {
 	}
 
@@ -428,7 +428,7 @@ public class WWidget {
 	/**
 	 * Executes a client-side tick for this widget.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void tick() {}
 
 	/**
@@ -477,7 +477,7 @@ public class WWidget {
 	 *
 	 * @since 3.0.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addPainters() {
 	}
 
@@ -555,7 +555,7 @@ public class WWidget {
 	 * @param builder the narration builder, cannot be null
 	 * @since 4.2.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addNarrations(NarrationMessageBuilder builder) {
 	}
 
@@ -568,7 +568,7 @@ public class WWidget {
 	 * @return whether the key is an activation key
 	 * @since 2.0.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public static boolean isActivationKey(int ch) {
 		return ch == GLFW.GLFW_KEY_ENTER || ch == GLFW.GLFW_KEY_KP_ENTER || ch == GLFW.GLFW_KEY_SPACE;
 	}
@@ -585,7 +585,7 @@ public class WWidget {
 	 * @return {@code true} if this widget should be rendered in dark mode, {@code false} otherwise
 	 * @since 7.1.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public boolean shouldRenderInDarkMode() {
 		var globalDarkMode = LibGui.isDarkMode();
 

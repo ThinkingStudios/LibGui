@@ -1,14 +1,23 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.MappingResolver;
+//import net.fabricmc.loader.api.FabricLoader;
+//import net.fabricmc.loader.api.MappingResolver;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 
+import net.minecraft.world.World;
+
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodType;
@@ -31,49 +40,39 @@ public final class ItemUseChecker {
 
 	// List of banned item use methods.
 	private static final List<Pair<String, MethodType>> ITEM_USE_METHODS = Util.make(new ArrayList<>(), result -> {
-		MappingResolver resolver = FabricLoader.getInstance().getMappingResolver();
+		Class<Hand> hand = Hand.class;
+		Class<ActionResult> actionResult = ActionResult.class;
+		Class<LivingEntity> livingEntity = LivingEntity.class;
+		Class<PlayerEntity> playerEntity = PlayerEntity.class;
+		Class<ItemStack> itemStack = ItemStack.class;
+		Class<ItemUsageContext> itemUsageContext = ItemUsageContext.class;
+		Class<World> world = World.class;
 
-		String hand = "class_1268";
-		String actionResult = "class_1269";
-		String livingEntity = "class_1309";
-		String playerEntity = "class_1657";
-		String itemStack = "class_1799";
-		String itemUsageContext = "class_1838";
-		String world = "class_1937";
-
+		// Must be mojmap method name!
 		// use
-		result.add(resolveItemMethod(resolver, "method_7836", actionResult, world, playerEntity, hand));
+		result.add(resolveItemMethod("use", actionResult, world, playerEntity, hand));
 		// useOnBlock
-		result.add(resolveItemMethod(resolver, "method_7884", actionResult, itemUsageContext));
+		result.add(resolveItemMethod("useOnBlock", actionResult, itemUsageContext));
 		// useOnEntity
-		result.add(resolveItemMethod(resolver, "method_7847", actionResult, itemStack, playerEntity, livingEntity, hand));
+		result.add(resolveItemMethod("useOnEntity", actionResult, itemStack, playerEntity, livingEntity, hand));
 	});
 
-	private static Pair<String, MethodType> resolveItemMethod(MappingResolver resolver, String name, String returnType, String... parameterTypes) {
-		// Build intermediary descriptor for resolving the method in the mappings.
-		StringBuilder desc = new StringBuilder("(");
-		for (String type : parameterTypes) {
-			desc.append("Lnet/minecraft/").append(type).append(';');
-		}
-		desc.append(")Lnet/minecraft/").append(returnType).append(';');
-
+	private static Pair<String, MethodType> resolveItemMethod(String name, Class<?> returnType, Class<?>... parameterTypes) {
 		// Remap the method name.
-		String deobfName = resolver.mapMethodName("intermediary", "net.minecraft.class_1792", name, desc.toString());
+		String deobfName = ObfuscationReflectionHelper.findMethod(Item.class, name, parameterTypes).getName();
 
 		// Remap the descriptor types.
-		Function<String, Class<?>> getIntermediaryClass = className -> {
-			className = resolver.mapClassName("intermediary", "net.minecraft." + className);
-
+		Function<Class<?>, Object> getIntermediaryClass = className -> {
 			try {
-				return Class.forName(className);
+				return Class.forName(className.getName());
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException("Could not resolve class net.minecraft." + className, e);
+				throw new RuntimeException("Could not resolve class" + className.getName(), e);
 			}
 		};
 		Class<?>[] paramClasses = Arrays.stream(parameterTypes)
 				.map(getIntermediaryClass)
 				.toArray(Class[]::new);
-		Class<?> returnClass = getIntermediaryClass.apply(returnType);
+		Class<?> returnClass = getIntermediaryClass.apply(returnType).getClass();
 
 		// Check that the method actually exists.
 		try {

@@ -2,17 +2,19 @@ package io.github.cottonmc.cotton.gui.impl.modmenu;
 
 import net.minecraft.text.Text;
 
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import com.terraformersmc.modmenu.api.ModMenuApi;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
+import org.thinkingstudio.libgui_foxified.loader.gui.ModConfigScreenFactory;
+import org.thinkingstudio.libgui_foxified.loader.gui.ModConfigScreenInitializer;
 
-public class ModMenuSupport implements ModMenuApi {
+import java.util.Objects;
+
+public class ModMenuSupport implements ModConfigScreenInitializer {
 	@Override
-	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return screen -> new CottonClientScreen(Text.translatable("options.libgui.libgui_settings"), new ConfigGui(screen)) {
+	public ModConfigScreenFactory getModConfigScreenFactory() {
+		return (modContainer, screen) -> new CottonClientScreen(Text.translatable("options.libgui.libgui_settings"), new ConfigGui(screen)) {
 			@Override
 			public void close() {
-				this.client.setScreen(screen);
+				Objects.requireNonNull(this.client).setScreen(screen);
 			}
 		};
 	}

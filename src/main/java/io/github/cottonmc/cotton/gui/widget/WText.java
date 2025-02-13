@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -16,6 +14,8 @@ import io.github.cottonmc.cotton.gui.impl.client.TextAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.VerticalAlignment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class WText extends WWidget {
 	protected boolean drawShadows;
 	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 	protected VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private List<OrderedText> wrappedLines;
 	private boolean wrappingScheduled = false;
 
@@ -58,7 +58,7 @@ public class WText extends WWidget {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private void wrapLines() {
 		TextRenderer font = MinecraftClient.getInstance().textRenderer;
 		wrappedLines = font.wrapLines(text, width);
@@ -71,7 +71,7 @@ public class WText extends WWidget {
 	 * @param y the Y coordinate in widget space
 	 * @return the text style at the position, or null if not found
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public Style getTextStyleAt(int x, int y) {
 		TextRenderer font = MinecraftClient.getInstance().textRenderer;
@@ -87,7 +87,7 @@ public class WText extends WWidget {
 		return null;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (wrappedLines == null || wrappingScheduled) {
@@ -113,7 +113,7 @@ public class WText extends WWidget {
 		ScreenDrawing.drawTextHover(context, hoveredTextStyle, x + mouseX, y + mouseY);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onClick(int x, int y, int button) {
 		if (button != 0) return InputResult.IGNORED; // only left clicks
@@ -280,7 +280,7 @@ public class WText extends WWidget {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, text);

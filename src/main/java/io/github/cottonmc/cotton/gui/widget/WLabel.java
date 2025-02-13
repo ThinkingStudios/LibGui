@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,6 +14,8 @@ import io.github.cottonmc.cotton.gui.impl.client.TextAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.VerticalAlignment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -61,7 +61,7 @@ public class WLabel extends WWidget {
 		this(text, DEFAULT_TEXT_COLOR);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		int yOffset = TextAlignment.getTextOffsetY(verticalAlignment, height, 1);
@@ -76,7 +76,7 @@ public class WLabel extends WWidget {
 		ScreenDrawing.drawTextHover(context, hoveredTextStyle, x + mouseX, y + mouseY);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onClick(int x, int y, int button) {
 		Style hoveredTextStyle = getTextStyleAt(x, y);
@@ -97,7 +97,7 @@ public class WLabel extends WWidget {
 	 * @param y the Y coordinate in widget space
 	 * @return the text style at the position, or null if not found
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public Style getTextStyleAt(int x, int y) {
 		if (isWithinBounds(x, y)) {
@@ -265,7 +265,7 @@ public class WLabel extends WWidget {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, text);

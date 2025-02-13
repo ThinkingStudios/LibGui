@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -35,6 +33,8 @@ import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 		return this;
 	}
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addPainters() {
 		if (this.rootPanel!=null && !fullscreen && getUseDefaultRootBackground()) {
 			this.rootPanel.setBackgroundPainter(BackgroundPainter.VANILLA);
@@ -585,7 +585,7 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private PacketSender getClientPacketSender() {
 		return ClientPlayNetworking.getSender();
 	}

@@ -1,12 +1,12 @@
 package io.github.cottonmc.cotton.gui.widget.icon;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * An icon that draws a texture.
@@ -77,7 +77,7 @@ public class TextureIcon implements Icon {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int size) {
 		ScreenDrawing.texturedRect(context, x, y, size, size, texture, color, opacity);

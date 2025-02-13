@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
@@ -9,6 +7,8 @@ import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,7 +22,7 @@ public class WSlider extends WAbstractSlider {
 	public static final Identifier LIGHT_TEXTURE = LibGuiCommon.id("textures/widget/slider_light.png");
 	public static final Identifier DARK_TEXTURE = LibGuiCommon.id("textures/widget/slider_dark.png");
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	private BackgroundPainter backgroundPainter;
 
@@ -46,7 +46,7 @@ public class WSlider extends WAbstractSlider {
 	}
 
 	@SuppressWarnings("SuspiciousNameCombination")
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter != null) {
@@ -94,13 +94,13 @@ public class WSlider extends WAbstractSlider {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public BackgroundPainter getBackgroundPainter() {
 		return backgroundPainter;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void setBackgroundPainter(@Nullable BackgroundPainter backgroundPainter) {
 		this.backgroundPainter = backgroundPainter;
 	}

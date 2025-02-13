@@ -1,13 +1,14 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 
 import io.github.cottonmc.cotton.gui.widget.WWidget;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,13 +18,13 @@ import java.util.Set;
 /**
  * Manages widgets that are painted on the in-game HUD.
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class CottonHud {
 	private static final Set<WWidget> widgets = new HashSet<>();
 	private static final Map<WWidget, Positioner> positioners = new HashMap<>();
 
 	static {
-		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+		NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Post.class, event -> {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int hudWidth = window.getScaledWidth();
 			int hudHeight = window.getScaledHeight();
@@ -33,11 +34,11 @@ public final class CottonHud {
 					positioner.reposition(widget, hudWidth, hudHeight);
 				}
 
-				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
+				widget.paint(event.getGuiGraphics(), widget.getX(), widget.getY(), -1, -1);
 			}
 		});
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
 			for (WWidget widget : widgets) {
 				widget.tick();
 			}

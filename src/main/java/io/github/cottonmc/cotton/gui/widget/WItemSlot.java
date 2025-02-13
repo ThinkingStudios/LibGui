@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -25,6 +23,8 @@ import io.github.cottonmc.cotton.gui.widget.data.Rect2i;
 import io.github.cottonmc.cotton.gui.widget.focus.Focus;
 import io.github.cottonmc.cotton.gui.widget.focus.FocusModel;
 import io.github.cottonmc.cotton.gui.widget.icon.Icon;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -86,7 +86,7 @@ public class WItemSlot extends WWidget {
 	private static final VisualLogger LOGGER = new VisualLogger(WItemSlot.class);
 	private final List<ValidatedSlot> peers = new ArrayList<>();
 	@Nullable
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private BackgroundPainter backgroundPainter;
 	@Nullable
 	private Icon icon = null;
@@ -419,7 +419,7 @@ public class WItemSlot extends WWidget {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onKeyPressed(int ch, int key, int modifiers) {
 		if (isActivationKey(ch) && host instanceof ScreenHandler handler && focusedSlot >= 0) {
@@ -473,7 +473,7 @@ public class WItemSlot extends WWidget {
 	 * @since 2.0.0
 	 */
 	@Nullable
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public BackgroundPainter getBackgroundPainter() {
 		return backgroundPainter;
 	}
@@ -483,7 +483,7 @@ public class WItemSlot extends WWidget {
 	 *
 	 * @param painter the new painter
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void setBackgroundPainter(@Nullable BackgroundPainter painter) {
 		this.backgroundPainter = painter;
 	}
@@ -538,7 +538,7 @@ public class WItemSlot extends WWidget {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter != null) {
@@ -602,13 +602,13 @@ public class WItemSlot extends WWidget {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addPainters() {
 		backgroundPainter = BackgroundPainter.SLOT;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addNarrations(NarrationMessageBuilder builder) {
 		List<Text> parts = new ArrayList<>();

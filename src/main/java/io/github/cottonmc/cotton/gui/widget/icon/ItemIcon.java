@@ -1,12 +1,13 @@
 package io.github.cottonmc.cotton.gui.widget.icon;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 
@@ -43,7 +44,7 @@ public class ItemIcon implements Icon {
 		this(Objects.requireNonNull(item, "item").getDefaultStack());
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void paint(DrawContext context, int x, int y, int size) {
 		float scale = size != 16 ? ((float) size / 16f) : 1f;

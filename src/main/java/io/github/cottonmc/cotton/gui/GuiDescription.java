@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.screen.PropertyDelegate;
 
@@ -9,6 +7,8 @@ import io.github.cottonmc.cotton.gui.widget.WPanel;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -56,7 +56,7 @@ public interface GuiDescription {
 	public void addSlotPeer(ValidatedSlot slot);
 	
 	/** Guis should use this method to add clientside styles and BackgroundPainters to their controls */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addPainters();
 
 	/**

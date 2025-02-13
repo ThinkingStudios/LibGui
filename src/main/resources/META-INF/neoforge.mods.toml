@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "libgui"
+version = "${version}"
+displayName = "LibGuiFoxified"
+displayURL = "https://github.com/ThinkingStudio/LibGuiFoxified"
+credits = "Falkreon, Juuz"
+authors = "TexTrue, ThinkingStudio"
+description = '''
+LibGui unofficial NeoForge port.
+
+Easy grid-based GUIs for NeoForge.
+'''
+logoFile = "assets/libgui/icon.png"
+
+[[dependencies.libgui]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.3,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.libgui]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.3,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "mixins.libgui.json"
