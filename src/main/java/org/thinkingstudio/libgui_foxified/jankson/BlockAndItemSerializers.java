@@ -1,4 +1,4 @@
-package io.github.cottonmc.jankson;
+package org.thinkingstudio.libgui_foxified.jankson;
 
 import java.util.Collection;
 import java.util.Optional;

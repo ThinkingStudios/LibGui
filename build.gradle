@@ -50,8 +50,10 @@ repositories {
 		name = 'NeoForged'
 		url = 'https://maven.neoforged.net/releases'
 	}
+	maven { url "https://jitpack.io" }
 	maven { url "https://maven.su5ed.dev/releases" }
 	maven { url "https://dl.cloudsmith.io/public/thinkingstudio/foxifiednetworking/maven/" }
+	maven { url "https://dl.cloudsmith.io/public/thinkingstudio/cottonjanksonfoxified/maven/" }
 }
 
 dependencies {
@@ -63,32 +65,9 @@ dependencies {
 	neoForge "net.neoforged:neoforge:${project.neoforge_version}"
 	modImplementation(include("me.textrue.foxified:FoxifiedNetworking:0.1.0alpha3+mc1.21.4"))
 
-	// True: module classes are used in public API classes/methods/fields
-	/*
-	def fabricApiModules = [
-			'fabric-api-base': true,
-			'fabric-lifecycle-events-v1': false,
-			'fabric-networking-api-v1': true,
-			'fabric-rendering-v1': false,
-			'fabric-resource-loader-v0': false,
-	]
-	fabricApiModules.forEach { module, api ->
-		def dependency = fabricApi.module(module, project.fabric_version)
+	forgeRuntimeLibrary(implementation(include("blue.endless:jankson:1.2.3")))
 
-		if (api) {
-			modApi dependency
-		} else {
-			modImplementation dependency
-		}
-	}
-	 */
-
-	//modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-	//include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-
-	implementation(include("blue.endless:jankson:1.2.3"))
-
-	//include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
+	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
 
 	// Test mod dependencies
 	testModImplementation sourceSets.main.output
@@ -120,6 +99,7 @@ tasks.withType(JavaCompile) {
 
 jar {
 	from "CREDITS.txt", "LICENSE"
+
 }
 
 /*

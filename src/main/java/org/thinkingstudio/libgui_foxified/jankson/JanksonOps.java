@@ -1,4 +1,4 @@
-package io.github.cottonmc.jankson;
+package org.thinkingstudio.libgui_foxified.jankson;
 
 import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonElement;

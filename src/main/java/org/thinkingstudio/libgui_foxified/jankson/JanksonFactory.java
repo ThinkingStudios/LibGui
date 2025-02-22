@@ -1,4 +1,4 @@
-package io.github.cottonmc.jankson;
+package org.thinkingstudio.libgui_foxified.jankson;
 
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;

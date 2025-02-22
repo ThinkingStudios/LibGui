@@ -7,7 +7,7 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import io.github.cottonmc.cotton.gui.impl.Proxy;
 import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
-import io.github.cottonmc.jankson.JanksonFactory;
+import org.thinkingstudio.libgui_foxified.jankson.JanksonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.thinkingstudio.libgui_foxified.loader.FoxifiedLoader;
