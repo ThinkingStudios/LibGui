@@ -27,13 +27,31 @@ loom {
 	runs {
 		testModClient {
 			client()
-			name = 'Test Mod Client'
+			name = "Test Mod Client"
+			mods {
+				create("libgui_test") {
+					sourceSet(sourceSets.testMod)
+				}
+
+				create("libgui"){
+					sourceSet sourceSets.main
+				}
+			}
 			source sourceSets.testMod
 		}
 
 		testModServer {
 			server()
-			name = 'Test Mod Server'
+			name = "Test Mod Server"
+			mods {
+				create("libgui_test") {
+					sourceSet(sourceSets.testMod)
+				}
+
+				create("libgui"){
+					sourceSet sourceSets.main
+				}
+			}
 			source sourceSets.testMod
 		}
 	}
@@ -98,7 +116,6 @@ tasks.withType(JavaCompile) {
 
 jar {
 	from "CREDITS.txt", "LICENSE"
-
 }
 
 /*

@@ -39,6 +39,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 @Mod(LibGuiTest.MODID)
 public class LibGuiFoxifiedTest {
 	public LibGuiFoxifiedTest(IEventBus modEventBus) {
+		TestModRegistries.ITEMS.register(modEventBus);
+		TestModRegistries.BLOCKS.register(modEventBus);
 		TestModRegistries.BLOCK_ENTITY_TYPES.register(modEventBus);
 		TestModRegistries.SCREEN_HANDLER_TYPES.register(modEventBus);
 		LibGuiTest.onInitialize();

@@ -8,15 +8,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-
-import net.neoforged.neoforge.network.IContainerFactory;
-import org.thinkingstudio.libgui_foxified.test.fabric.ExtendedScreenHandlerFactory;
-
 
 public class GuiItem extends Item {
 	public GuiItem(Settings settings) {
@@ -35,7 +30,8 @@ public class GuiItem extends Item {
 			case OFF_HAND -> EquipmentSlot.OFFHAND;
 		};
 		ItemStack stack = player.getStackInHand(hand);
-		return new ExtendedScreenHandlerFactory<EquipmentSlot>() {
+
+		return new NamedScreenHandlerFactory() {
 			@Override
 			public Text getDisplayName() {
 				return stack.getName();
@@ -44,11 +40,6 @@ public class GuiItem extends Item {
 			@Override
 			public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
 				return new TestItemDescription(syncId, playerInventory, StackReference.of(player, slot));
-			}
-
-			@Override
-			public EquipmentSlot getScreenOpeningData(ServerPlayerEntity player) {
-				return slot;
 			}
 		};
 	}

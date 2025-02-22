@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "libgui_test"
-version = "${version}"
+version = "0.1.0"
 displayName = "LibGuiFoxifiedTest"
 displayURL = "https://github.com/ThinkingStudio/LibGuiFoxified"
 credits = "Falkreon, Juuz"
