@@ -1,7 +1,6 @@
 plugins {
 	id "dev.architectury.loom" version "1.9-SNAPSHOT"
 	id 'maven-publish'
-	//id 'checkstyle'
 }
 
 base {
@@ -12,16 +11,19 @@ version = "$project.mod_version+$project.minecraft_version"
 group = project.maven_group
 
 sourceSets {
-	//javadoc {
-	//}
+	javadoc {
+	}
 
+	/*
 	testMod {
 		compileClasspath += main.compileClasspath
 		runtimeClasspath += main.runtimeClasspath
 	}
+	 */
 }
 
 loom {
+	/*
 	createRemapConfigurations(sourceSets.testMod)
 
 	runs {
@@ -55,6 +57,7 @@ loom {
 			source sourceSets.testMod
 		}
 	}
+	 */
 }
 
 repositories {
@@ -87,7 +90,7 @@ dependencies {
 	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
 
 	// Test mod dependencies
-	testModImplementation sourceSets.main.output
+	//testModImplementation sourceSets.main.output
 }
 
 processResources {
@@ -100,7 +103,7 @@ processResources {
 
 java {
 	withSourcesJar()
-	//withJavadocJar()
+	withJavadocJar()
 
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
@@ -118,14 +121,6 @@ jar {
 	from "CREDITS.txt", "LICENSE"
 }
 
-/*
-checkstyle {
-	configFile = rootProject.file('checkstyle.xml')
-	configProperties = [suppressions: rootProject.file('checkstyle.suppressions.xml').absolutePath]
-	toolVersion = '10.9.2'
-}
-
-
 def javadocBuildJar = tasks.register('javadocBuildJar', Jar) {
 	destinationDirectory = file('build/devlibs')
 	archiveClassifier = 'javadoc-build'
@@ -142,9 +137,9 @@ javadoc {
 				'io.github.cottonmc.cotton.gui.jd.PropertyTaglet'
 		tagletPath javadocBuildJar.get().archiveFile.get().asFile
 	}
-	*/
-	//exclude("**/impl/**")
-//}
+
+	exclude("**/impl/**")
+}
 
 // configure the maven publication
 publishing {
