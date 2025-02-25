@@ -2,8 +2,8 @@ package org.thinkingstudio.libgui_foxified;
 
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
 import io.github.cottonmc.cotton.gui.impl.client.LibGuiClient;
-
 import io.github.cottonmc.cotton.gui.impl.modmenu.ModMenuSupport;
+
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;

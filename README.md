@@ -2,6 +2,8 @@
 
 # LibGuiFoxified
 
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
+
 LibGui unofficial (Neo)Forge port.
 
 Minecraft GUIs without spending forever painstakingly aligning things to the background image.
@@ -9,7 +11,7 @@ Instead, LibGui takes a logical description of your GUI, and draws it on-the-fly
 GUI system. Controls can be hung on an itemslot grid or offset from it. Panel styles, colors,
 and opacity can be customized, and everything can be extended.
 
-## Setup
+## Dev Setup
 
 This is how to get LibGuiFoxified into your development environment:
 

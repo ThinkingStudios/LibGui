@@ -7,7 +7,7 @@ base {
 	archivesName = project.archives_base_name
 }
 
-version = "$project.mod_version+$project.minecraft_version"
+version = "$project.mod_version+$project.upstream_version+$project.minecraft_version"
 group = project.maven_group
 
 sourceSets {
@@ -73,7 +73,7 @@ repositories {
 	}
 	maven { url "https://jitpack.io" }
 	maven { url "https://maven.su5ed.dev/releases" }
-	maven { url "https://dl.cloudsmith.io/public/thinkingstudio/foxifiednetworking/maven/" }
+	maven { url "https://dl.cloudsmith.io/public/thinkingstudio/forgifiedfabricapi/maven/" }
 }
 
 dependencies {
@@ -83,7 +83,17 @@ dependencies {
 		mappings "dev.architectury:yarn-mappings-patch-neoforge:${project.yarn_patch}"
 	}
 	neoForge "net.neoforged:neoforge:${project.neoforge_version}"
-	modImplementation(include("me.textrue.foxified:FoxifiedNetworking:0.1.0alpha3+mc1.21.4"))
+	// ForgifiedFabricAPI
+	for (String module in ffapi_modules.split(",")) {
+		// Fabric API Base
+		if (module == "fabric-api-base") {
+			modApi(include("org.sinytra.forgified-fabric-api:$module:0.4.42+d1308ded19")) { transitive = false }
+		}
+		// Fabric Networking API V1
+		if (module == "fabric-networking-api-v1") {
+			modApi(include("org.sinytra.forgified-fabric-api:$module:4.3.2+cfe47bf204")) { transitive = false }
+		}
+	}
 
 	forgeRuntimeLibrary(implementation(include("blue.endless:jankson:1.2.3")))
 
@@ -147,19 +157,19 @@ publishing {
 		maven(MavenPublication) {
 			from components.java
 			pom {
-				name = "LibGui"
+				name = "LibGuiFoxified"
 				description = "Minecraft GUI Library"
-				url = "https://github.com/CottonMC/LibGui"
+				url = "https://github.com/ThinkingStudios/LibGuiFoxified"
 				licenses {
 					license {
 						name = "MIT"
-						url = "https://github.com/CottonMC/LibGui/blob/HEAD/LICENSE"
+						url = "https://github.com/ThinkingStudios/LibGuiFoxified/blob/HEAD/LICENSE"
 					}
 				}
 				developers {
 					developer {
-						name = "CottonMC"
-						url = "https://github.com/CottonMC"
+						name = "ThinkingStudio"
+						url = "https://github.com/ThinkingStudios"
 					}
 				}
 			}
@@ -168,14 +178,15 @@ publishing {
 
 	// select the repositories you want to publish to
 	repositories {
-		def env = System.getenv()
-		if (env.MAVEN_URL) {
-			maven {
-				url = env.MAVEN_URL
-				credentials {
-					username = env.MAVEN_USERNAME
-					password = env.MAVEN_PASSWORD
-				}
+		maven {
+			name = "cloudsmith"
+			url = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			def releasesRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			def snapshotsRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			credentials {
+				username = 'tex-true'
+				password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
 			}
 		}
 	}
