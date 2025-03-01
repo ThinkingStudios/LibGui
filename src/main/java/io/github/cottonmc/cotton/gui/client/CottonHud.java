@@ -1,14 +1,13 @@
 package io.github.cottonmc.cotton.gui.client;
 
+import org.thinkingstudio.libgui_foxified.events.ClientTickEvents;
+import org.thinkingstudio.libgui_foxified.events.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +23,7 @@ public final class CottonHud {
 	private static final Map<WWidget, Positioner> positioners = new HashMap<>();
 
 	static {
-		NeoForge.EVENT_BUS.addListener(RenderGuiEvent.Post.class, event -> {
+		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int hudWidth = window.getScaledWidth();
 			int hudHeight = window.getScaledHeight();
@@ -34,11 +33,11 @@ public final class CottonHud {
 					positioner.reposition(widget, hudWidth, hudHeight);
 				}
 
-				widget.paint(event.getGuiGraphics(), widget.getX(), widget.getY(), -1, -1);
+				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
 			}
 		});
 
-		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			for (WWidget widget : widgets) {
 				widget.tick();
 			}

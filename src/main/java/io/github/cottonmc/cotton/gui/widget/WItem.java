@@ -104,10 +104,10 @@ public class WItem extends WWidget {
 	 */
 	@SuppressWarnings("unchecked")
 	private static List<ItemStack> getRenderStacks(TagKey<? extends ItemConvertible> tag) {
-		Registry<ItemConvertible> registry = (Registry<ItemConvertible>) Registries.REGISTRIES.get(tag.registryRef().getValue());
+		Registry<ItemConvertible> registry = (Registry<ItemConvertible>) Registries.REGISTRIES.get(tag.registry().getValue());
 		ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
 
-		for (RegistryEntry<ItemConvertible> item : registry.iterateEntries((TagKey<ItemConvertible>) tag)) {
+		for (RegistryEntry<ItemConvertible> item : registry.getOrCreateEntryList((TagKey<ItemConvertible>) tag)) {
 			builder.add(item.value().asItem().getDefaultStack());
 		}
 

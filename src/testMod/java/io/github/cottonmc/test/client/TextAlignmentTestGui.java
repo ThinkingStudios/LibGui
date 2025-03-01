@@ -57,7 +57,6 @@ public final class TextAlignmentTestGui extends LightweightGuiDescription {
 		tabPanel.add(labelPanel, builder -> builder.title(Text.of("WLabel")));
 		tabPanel.add(textPanel, builder -> builder.title(Text.of("WText")));
 		setRootPanel(tabPanel);
-		setUseDefaultRootBackground(false);
 		tabPanel.validate(this);
 	}
 
@@ -68,5 +67,9 @@ public final class TextAlignmentTestGui extends LightweightGuiDescription {
 		slider.setLabelUpdater(value -> Text.of(type.getSimpleName() + ": " + values[value - 1]));
 		slider.setValueChangeListener(value -> consumer.accept(values[value - 1]));
 		return slider;
+	}
+
+	@Override
+	public void addPainters() {
 	}
 }

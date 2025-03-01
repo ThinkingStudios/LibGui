@@ -17,7 +17,10 @@ public class TabTestGui extends LightweightGuiDescription {
 
 		tabs.setSize(7 * 18, 5 * 18);
 		setRootPanel(tabs);
-		setUseDefaultRootBackground(false);
 		getRootPanel().validate(this);
+	}
+
+	@Override
+	public void addPainters() {
 	}
 }

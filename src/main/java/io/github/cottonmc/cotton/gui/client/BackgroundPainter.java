@@ -1,7 +1,6 @@
 package io.github.cottonmc.cotton.gui.client;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
@@ -180,6 +179,6 @@ public interface BackgroundPainter {
 	 */
 	static BackgroundPainter createGuiSprite(Identifier texture) {
 		Objects.requireNonNull(texture, "Texture cannot be null");
-		return (context, left, top, panel) -> context.drawGuiTexture(RenderLayer::getGuiTextured, texture, left, top, panel.getWidth(), panel.getHeight());
+		return (context, left, top, panel) -> context.drawGuiTexture(texture, left, top, panel.getWidth(), panel.getHeight());
 	}
 }

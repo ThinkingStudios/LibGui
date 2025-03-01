@@ -27,7 +27,6 @@ public class LightweightGuiDescription implements GuiDescription {
 	protected boolean titleVisible = true;
 	protected HorizontalAlignment titleAlignment = HorizontalAlignment.LEFT;
 	private Vec2i titlePos = new Vec2i(8, 6);
-	private boolean useDefaultRootBackground = true;
 	
 	@Override
 	public WPanel getRootPanel() {
@@ -61,19 +60,9 @@ public class LightweightGuiDescription implements GuiDescription {
 
 	@Override
 	public void addPainters() {
-		if (this.rootPanel!=null && !fullscreen && getUseDefaultRootBackground()) {
+		if (this.rootPanel!=null && !fullscreen) {
 			this.rootPanel.setBackgroundPainter(BackgroundPainter.VANILLA);
 		}
-	}
-
-	@Override
-	public boolean getUseDefaultRootBackground() {
-		return useDefaultRootBackground;
-	}
-
-	@Override
-	public void setUseDefaultRootBackground(boolean useDefaultRootBackground) {
-		this.useDefaultRootBackground = useDefaultRootBackground;
 	}
 
 	@Override

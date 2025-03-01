@@ -10,38 +10,111 @@ import blue.endless.jankson.api.Marshaller;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 
 public class BlockAndItemSerializers {
+	/**
+	 * @deprecated This method doesn't support item stack components.
+	 * You can use {@link ItemStack#CODEC} with a {@link net.minecraft.registry.RegistryOps}
+	 * wrapping a {@link JanksonOps}.
+	 */
+	@Deprecated(forRemoval = true)
+	public static ItemStack getItemStack(JsonObject json, Marshaller m) {
+		String itemIdString = json.get(String.class, "item");
+		Item item = Registries.ITEM.getOrEmpty(Identifier.of(itemIdString)).orElse(Items.AIR);
+		ItemStack stack = new ItemStack(item);
+		if (json.containsKey("count")) {
+			Integer count = json.get(Integer.class, "count");
+			if (count!=null) {
+				stack.setCount(count);
+			}
+		}
+		return stack;
+	}
+
+	/**
+	 * @deprecated This method doesn't support item stack components.
+	 * You can use {@link ItemStack#CODEC} with a {@link net.minecraft.registry.RegistryOps}
+	 * wrapping a {@link JanksonOps}. For supporting the inline/primitive format, you can use
+	 * {@link com.mojang.serialization.Codec#withAlternative(com.mojang.serialization.Codec, com.mojang.serialization.Codec, java.util.function.Function)
+	 * Codec.withAlternative}
+	 * where the secondary codec is an {@link Item} codec.
+	 */
+	@Deprecated(forRemoval = true)
+	public static ItemStack getItemStackPrimitive(String s, Marshaller m) {
+		Item item = Registries.ITEM.getOrEmpty(Identifier.of(s)).orElse(Items.AIR);
+		ItemStack stack = new ItemStack(item);
+		return stack;
+	}
+
+	/**
+	 * @deprecated This method doesn't support item stack components.
+	 * You can use {@link ItemStack#CODEC} with a {@link net.minecraft.registry.RegistryOps}
+	 * wrapping a {@link JanksonOps}.
+	 */
+	@Deprecated(forRemoval = true)
+	public static JsonElement saveItemStack(ItemStack stack, Marshaller m) {
+		JsonPrimitive id = new JsonPrimitive(Registries.ITEM.getId(stack.getItem()).toString());
+		if (stack.getCount()==1) return id;
+
+		JsonObject result = new JsonObject();
+		result.put("item", new JsonPrimitive(Registries.ITEM.getId(stack.getItem()).toString()));
+		result.put("count", new JsonPrimitive(stack.getCount()));
+		return result;
+	}
+
+	/**
+	 * @deprecated The {@link blue.endless.jankson.Jankson} instance created
+	 * by {@link JanksonFactory} already supports {@link Block} with this format.
+	 */
+	@Deprecated(forRemoval = true)
+	public static Block getBlockPrimitive(String blockIdString, Marshaller m) {
+		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString));
+		return blockOpt.orElse(null);
+	}
+
+	/**
+	 * @deprecated The {@link blue.endless.jankson.Jankson} instance created
+	 * by {@link JanksonFactory} already supports {@link Block} with this format.
+	 */
+	@Deprecated(forRemoval = true)
+	public static JsonElement saveBlock(Block block, Marshaller m) {
+		return new JsonPrimitive(Registries.BLOCK.getId(block).toString());
+	}
+
+
 	public static BlockState getBlockStatePrimitive(String blockIdString, Marshaller m) {
-		Optional<Block> blockOpt = Registries.BLOCK.getOptionalValue(Identifier.of(blockIdString));
+		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString));
 		if (blockOpt.isPresent()) {
 			return blockOpt.get().getDefaultState();
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @param json A json object representing a BlockState
 	 * @return the BlockState represented, or null if the object does not represent a valid BlockState.
 	 */
 	public static BlockState getBlockState(JsonObject json, Marshaller m) {
 		String blockIdString = json.get(String.class, "block");
-		
-		Block block = Registries.BLOCK.getOptionalValue(Identifier.of(blockIdString)).orElse(null);
+
+		Block block = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString)).orElse(null);
 		if (block==null) return null;
-		
+
 		BlockState state = block.getDefaultState();
 		JsonObject stateObject = json.getObject("BlockStateTag");
 		if (stateObject==null) stateObject = json;
-		
+
 		Collection<Property<?>> properties = state.getProperties();
 		for(String key : stateObject.keySet()) {
 			if (stateObject==json && (key.equals("BlockStateTag") || key.equals("block"))) continue;
-			
+
 			for(Property<?> property : properties) {
 				if (property.getName().equals(key)) {
 					String val = stateObject.get(String.class, key);
@@ -50,17 +123,17 @@ public class BlockAndItemSerializers {
 				}
 			}
 		}
-		
+
 		return state;
 	}
-	
+
 	public static JsonElement saveBlockState(BlockState state, Marshaller m) {
 		BlockState defaultState = state.getBlock().getDefaultState();
-		
+
 		if (state.equals(defaultState)) {
 			//Use a String for the blockID only
 			return new JsonPrimitive( Registries.BLOCK.getId(state.getBlock()).toString() );
-			
+
 		} else {
 			JsonObject result = new JsonObject();
 			result.put("block", new JsonPrimitive( Registries.BLOCK.getId(state.getBlock()).toString() ));
@@ -73,18 +146,18 @@ public class BlockAndItemSerializers {
 					break;
 				}
 			}
-			
+
 			for(Property<?> property : state.getProperties()) {
 				if (state.get(property).equals(defaultState.get(property))) continue;
 				String key = property.getName();
 				String val = getProperty(state, property);
 				stateObject.put(key, new JsonPrimitive(val));
 			}
-			
+
 			return result;
 		}
 	}
-	
+
 	public static <T extends Comparable<T>> BlockState withProperty(BlockState state, Property<T> property, String stringValue) {
 		Optional<T> val = property.parse(stringValue);
 		if (val.isPresent()) {
@@ -93,7 +166,7 @@ public class BlockAndItemSerializers {
 			return state;
 		}
 	}
-	
+
 	public static <T extends Comparable<T>> String getProperty(BlockState state, Property<T> property) {
 		return property.name(state.get(property));
 	}

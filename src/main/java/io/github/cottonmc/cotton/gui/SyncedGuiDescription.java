@@ -1,8 +1,5 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
@@ -12,6 +9,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -35,6 +33,7 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -59,7 +58,6 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 
 	protected WWidget focus;
 	private Vec2i titlePos = new Vec2i(8, 6);
-	private boolean useDefaultRootBackground = true;
 
 	/**
 	 * Constructs a new synced GUI description without a block inventory or a property delegate.
@@ -124,21 +122,11 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	
 	@OnlyIn(Dist.CLIENT)
 	public void addPainters() {
-		if (this.rootPanel!=null && !fullscreen && getUseDefaultRootBackground()) {
+		if (this.rootPanel!=null && !fullscreen) {
 			this.rootPanel.setBackgroundPainter(BackgroundPainter.VANILLA);
 		}
 	}
-
-	@Override
-	public boolean getUseDefaultRootBackground() {
-		return useDefaultRootBackground;
-	}
-
-	@Override
-	public void setUseDefaultRootBackground(boolean useDefaultRootBackground) {
-		this.useDefaultRootBackground = useDefaultRootBackground;
-	}
-
+	
 	public void addSlotPeer(ValidatedSlot slot) {
 		this.addSlot(slot);
 	}
@@ -571,22 +559,16 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 		return world instanceof ServerWorld ? NetworkSide.SERVER : NetworkSide.CLIENT;
 	}
 
-	/**
-	 * Gets the packet sender corresponding to this GUI's network side.
-	 *
-	 * @return the packet sender
-	 * @since 3.3.0
-	 */
-	public final PacketSender getPacketSender() {
+	public void sendPacket(CustomPayload payload) {
 		if (getNetworkSide() == NetworkSide.SERVER) {
-			return ServerPlayNetworking.getSender((ServerPlayerEntity) playerInventory.player);
+			PacketDistributor.sendToPlayer((ServerPlayerEntity) playerInventory.player, payload);
 		} else {
-			return getClientPacketSender();
+			sendToServer(payload);
 		}
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private PacketSender getClientPacketSender() {
-		return ClientPlayNetworking.getSender();
+	private void sendToServer(CustomPayload payload) {
+		PacketDistributor.sendToServer(payload);
 	}
 }
