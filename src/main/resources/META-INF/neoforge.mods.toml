@@ -15,7 +15,7 @@ LibGui unofficial NeoForge port.
 
 Easy grid-based GUIs for NeoForge.
 '''
-logoFile = "assets/libgui/icon.png"
+logoFile = "icon.png"
 
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
