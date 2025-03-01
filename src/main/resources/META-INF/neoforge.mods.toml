@@ -15,7 +15,7 @@ LibGui unofficial NeoForge port.
 
 Easy grid-based GUIs for NeoForge.
 '''
-logoFile = "assets/libgui/icon.png"
+logoFile = "icon.png"
 
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
@@ -23,14 +23,14 @@ file="META-INF/accesstransformer.cfg"
 [[dependencies.libgui]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.3,)"
+versionRange = "[21.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.libgui]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.3,)"
+versionRange = "[1.21.2,)"
 ordering = "NONE"
 side = "BOTH"
 
