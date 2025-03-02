@@ -1,8 +1,5 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InventoryProvider;
@@ -12,6 +9,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -35,6 +33,7 @@ import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -577,16 +576,30 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	 * @return the packet sender
 	 * @since 3.3.0
 	 */
-	public final PacketSender getPacketSender() {
-		if (getNetworkSide() == NetworkSide.SERVER) {
-			return ServerPlayNetworking.getSender((ServerPlayerEntity) playerInventory.player);
-		} else {
-			return getClientPacketSender();
-		}
+	public PacketSender getPacketSender() {
+		return new PacketSender(this, (ServerPlayerEntity) playerInventory.player);
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	private PacketSender getClientPacketSender() {
-		return ClientPlayNetworking.getSender();
+	public static class PacketSender {
+		private final SyncedGuiDescription syncedGuiDescription;
+		private final ServerPlayerEntity serverPlayer;
+
+		public PacketSender(SyncedGuiDescription syncedGuiDescription, ServerPlayerEntity serverPlayer) {
+			this.syncedGuiDescription = syncedGuiDescription;
+			this.serverPlayer = serverPlayer;
+		}
+
+		public void sendPacket(CustomPayload payload) {
+			if (syncedGuiDescription.getNetworkSide() == NetworkSide.SERVER) {
+				PacketDistributor.sendToPlayer(serverPlayer, payload);
+			} else {
+				sendToServer(payload);
+			}
+		}
+
+		@OnlyIn(Dist.CLIENT)
+		private void sendToServer(CustomPayload payload) {
+			PacketDistributor.sendToServer(payload);
+		}
 	}
 }

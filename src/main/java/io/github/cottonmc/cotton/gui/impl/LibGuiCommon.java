@@ -8,8 +8,4 @@ public final class LibGuiCommon {
 	public static Identifier id(String path) {
 		return Identifier.of(MOD_ID, path);
 	}
-
-	public static void onInitialize() {
-		ScreenNetworkingImpl.init();
-	}
 }
