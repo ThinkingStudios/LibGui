@@ -9,6 +9,7 @@ import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,8 +55,15 @@ public class WListPanel<D, W extends WWidget> extends WClippedPanel {
 	 */
 	protected boolean fixedHeight = false;
 
-	private Insets insets = new Insets(4, 4);
-	private int gap = 4;
+	/**
+	 * @deprecated Replaced with {@link #getInsets() insets} and {@link #getGap() gap}.
+	 */
+	@Deprecated(forRemoval = true)
+	protected int margin = 4;
+
+	// When the margin field is removed, these should get default values Insets(4, 4) and 4.
+	private @Nullable Insets insets = null;
+	private int gap = -1;
 
 	/**
 	 * The scroll bar of this list.
@@ -246,7 +254,7 @@ public class WListPanel<D, W extends WWidget> extends WClippedPanel {
 	 */
 	public Insets getInsets() {
 		// Returns the *effective* insets of this list for backwards compat.
-		return insets;
+		return insets != null ? insets : new Insets(margin, margin);
 	}
 
 	/**
@@ -267,7 +275,7 @@ public class WListPanel<D, W extends WWidget> extends WClippedPanel {
 	 */
 	public int getGap() {
 		// Returns the *effective* gap of this list for backwards compat.
-		return gap;
+		return gap >= 0 ? gap : margin;
 	}
 
 	/**

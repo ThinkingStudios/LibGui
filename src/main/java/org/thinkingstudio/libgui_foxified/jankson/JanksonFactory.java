@@ -82,7 +82,7 @@ public class JanksonFactory {
 			.registerSerializer(BlockState.class, BlockAndItemSerializers::saveBlockState);
 		
 		builder
-			.registerDeserializer(String.class, Identifier.class, (s, m) -> Identifier.of(s))
+			.registerDeserializer(String.class, Identifier.class, (s, m) -> new Identifier(s))
 			.registerSerializer(Identifier.class, (i,m)->new JsonPrimitive(i.toString()))
 			;
 
@@ -160,7 +160,7 @@ public class JanksonFactory {
 	}
 	
 	private static <T> T lookupDeserialize(String s, Registry<T> registry) {
-		return registry.get(Identifier.of(s));
+		return registry.get(new Identifier(s));
 	}
 	
 	private static <T, U extends T> JsonElement lookupSerialize(T t, Registry<U> registry) {

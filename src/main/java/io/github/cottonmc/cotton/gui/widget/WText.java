@@ -30,7 +30,6 @@ public class WText extends WWidget {
 	protected Text text;
 	protected int color;
 	protected int darkmodeColor;
-	protected boolean drawShadows;
 	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 	protected VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 	@OnlyIn(Dist.CLIENT)
@@ -102,11 +101,7 @@ public class WText extends WWidget {
 			OrderedText line = wrappedLines.get(i);
 			int c = shouldRenderInDarkMode() ? darkmodeColor : color;
 
-			if (getDrawShadows()) {
-				ScreenDrawing.drawStringWithShadow(context, line, horizontalAlignment, x, y + yOffset + i * font.fontHeight, width, c);
-			} else {
-				ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.fontHeight, width, c);
-			}
+			ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.fontHeight, width, c);
 		}
 
 		Style hoveredTextStyle = getTextStyleAt(mouseX, mouseY);
@@ -128,7 +123,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Gets the text of this text widget.
+	 * Gets the text of this label.
 	 *
 	 * @return the text
 	 */
@@ -137,10 +132,10 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Sets the text of this text widget.
+	 * Sets the text of this label.
 	 *
 	 * @param text the new text
-	 * @return this text widget
+	 * @return this label
 	 */
 	public WText setText(Text text) {
 		Objects.requireNonNull(text, "text is null");
@@ -151,7 +146,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Gets the light mode color of this text widget.
+	 * Gets the light mode color of this label.
 	 *
 	 * @return the color
 	 */
@@ -160,7 +155,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Sets the light mode color of this text widget.
+	 * Sets the light mode color of this label.
 	 *
 	 * @param color the new color
 	 * @return this text widget
@@ -171,7 +166,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Gets the dark mode color of this text widget.
+	 * Gets the dark mode color of this label.
 	 *
 	 * @return the color
 	 * @since 2.0.0
@@ -181,7 +176,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Sets the dark mode color of this text widget.
+	 * Sets the dark mode color of this label.
 	 *
 	 * @param darkmodeColor the new color
 	 * @return this text widget
@@ -192,7 +187,7 @@ public class WText extends WWidget {
 	}
 
 	/**
-	 * Sets the light and dark mode colors of this text widget.
+	 * Sets the light and dark mode colors of this label.
 	 *
 	 * @param color         the new light color
 	 * @param darkmodeColor the new dark color
@@ -201,28 +196,6 @@ public class WText extends WWidget {
 	public WText setColor(int color, int darkmodeColor) {
 		setColor(color);
 		setDarkmodeColor(darkmodeColor);
-		return this;
-	}
-
-	/**
-	 * Checks whether shadows should be drawn for this text widget.
-	 * 
-	 * @return {@code true} shadows should be drawn, {@code false} otherwise
-	 * @since 11.1.0
-	 */
-	public boolean getDrawShadows() {
-		return drawShadows;
-	}
-
-	/**
-	 * Sets whether shadows should be drawn for this text widget.
-	 *
-	 * @param drawShadows {@code true} if shadows should be drawn, {@code false} otherwise
-	 * @return this text widget
-	 * @since 11.1.0
-	 */
-	public WText setDrawShadows(boolean drawShadows) {
-		this.drawShadows = drawShadows;
 		return this;
 	}
 

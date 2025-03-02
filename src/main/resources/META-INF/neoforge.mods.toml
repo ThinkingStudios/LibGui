@@ -17,20 +17,17 @@ Easy grid-based GUIs for NeoForge.
 '''
 logoFile = "icon.png"
 
-[[accessTransformers]]
-file="META-INF/accesstransformer.cfg"
-
 [[dependencies.libgui]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.2,)"
+versionRange = "[20.5,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.libgui]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.2,)"
+versionRange = "[1.20.5,)"
 ordering = "NONE"
 side = "BOTH"
 

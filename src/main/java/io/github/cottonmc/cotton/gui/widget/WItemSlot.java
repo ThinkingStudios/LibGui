@@ -26,10 +26,8 @@ import io.github.cottonmc.cotton.gui.widget.icon.Icon;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -68,7 +66,7 @@ import java.util.stream.Stream;
  * <pre>
  * {@code
  * slot.addChangeListener((slot, inventory, index, stack) -> {
- *     if (stack.isEmpty() || stack.getCount() < stack.getMaxCount()) {
+ *     if (stack.isEmpty() || stack.getCount() < stack.getMaxCount()) {
  *         System.out.println("I'm not full yet!");
  *     }
  * });
@@ -81,7 +79,7 @@ public class WItemSlot extends WWidget {
 	 *
 	 * @since 6.2.0
 	 */
-	public static final Identifier SLOT_TEXTURE = LibGuiCommon.id("textures/widget/item_slot.png");
+	public static final Identifier SLOT_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/item_slot.png");
 
 	private static final VisualLogger LOGGER = new VisualLogger(WItemSlot.class);
 	private final List<ValidatedSlot> peers = new ArrayList<>();
@@ -222,42 +220,6 @@ public class WItemSlot extends WWidget {
 		return true;
 	}
 
-	/**
-	 * {@return the inventory backing this slot}
-	 * @since 11.1.0
-	 */
-	public Inventory getInventory() {
-		return inventory;
-	}
-
-	/**
-	 * {@return the starting index of slots in the backing inventory}
-	 * @since 11.1.0
-	 */
-	public int getStartIndex() {
-		return startIndex;
-	}
-
-	/**
-	 * {@return the width of this slot widget in individual slots}
-	 * @since 11.1.0
-	 */
-	public int getSlotsWide() {
-		return slotsWide;
-	}
-
-	/**
-	 * {@return the height of this slot widget in individual slots}
-	 * @since 11.1.0
-	 */
-	public int getSlotsHigh() {
-		return slotsHigh;
-	}
-
-	/**
-	 * {@return whether this slot is a big slot}
-	 * Big slots are commonly used for crafting results and similar outputs.
-	 */
 	public boolean isBigSlot() {
 		return big;
 	}
@@ -448,25 +410,6 @@ public class WItemSlot extends WWidget {
 	}
 
 	/**
-	 * {@return an unmodifiable list containing the current slot peers}
-	 *
-	 * @since 11.1.0
-	 */
-	public @UnmodifiableView List<? extends ValidatedSlot> getPeers() {
-		return Collections.unmodifiableList(peers);
-	}
-
-	/**
-	 * Gets the starting {@linkplain net.minecraft.screen.slot.Slot#id ID} for the slot peers.
-	 *
-	 * @return the starting ID for the slot peers, or -1 if this slot widget has no peers
-	 * @since 11.1.0
-	 */
-	public int getPeerStartId() {
-		return !peers.isEmpty() ? peers.getFirst().id : -1;
-	}
-
-	/**
 	 * Gets this slot widget's background painter.
 	 *
 	 * @return the background painter
@@ -536,6 +479,31 @@ public class WItemSlot extends WWidget {
 			peer.setOutputFilter(outputFilter);
 		}
 		return this;
+	}
+
+	/**
+	 * Gets the item filter of this item slot.
+	 *
+	 * @return the item filter
+	 * @deprecated Replaced by {@link #getInputFilter()}
+	 * @since 2.0.0
+	 */
+	@Deprecated(forRemoval = true)
+	public Predicate<ItemStack> getFilter() {
+		return inputFilter;
+	}
+
+	/**
+	 * Sets the item filter of this item slot.
+	 *
+	 * @param filter the new item filter
+	 * @return this item slot
+	 * @deprecated Replaced by {@link #setInputFilter(Predicate)}
+	 * @since 2.0.0
+	 */
+	@Deprecated(forRemoval = true)
+	public WItemSlot setFilter(Predicate<ItemStack> filter) {
+		return setInputFilter(filter);
 	}
 
 	@OnlyIn(Dist.CLIENT)

@@ -26,7 +26,7 @@ public class BlockAndItemSerializers {
 	@Deprecated(forRemoval = true)
 	public static ItemStack getItemStack(JsonObject json, Marshaller m) {
 		String itemIdString = json.get(String.class, "item");
-		Item item = Registries.ITEM.getOrEmpty(Identifier.of(itemIdString)).orElse(Items.AIR);
+		Item item = Registries.ITEM.getOrEmpty(new Identifier(itemIdString)).orElse(Items.AIR);
 		ItemStack stack = new ItemStack(item);
 		if (json.containsKey("count")) {
 			Integer count = json.get(Integer.class, "count");
@@ -47,7 +47,7 @@ public class BlockAndItemSerializers {
 	 */
 	@Deprecated(forRemoval = true)
 	public static ItemStack getItemStackPrimitive(String s, Marshaller m) {
-		Item item = Registries.ITEM.getOrEmpty(Identifier.of(s)).orElse(Items.AIR);
+		Item item = Registries.ITEM.getOrEmpty(new Identifier(s)).orElse(Items.AIR);
 		ItemStack stack = new ItemStack(item);
 		return stack;
 	}
@@ -74,7 +74,7 @@ public class BlockAndItemSerializers {
 	 */
 	@Deprecated(forRemoval = true)
 	public static Block getBlockPrimitive(String blockIdString, Marshaller m) {
-		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString));
+		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(new Identifier(blockIdString));
 		return blockOpt.orElse(null);
 	}
 
@@ -89,7 +89,7 @@ public class BlockAndItemSerializers {
 
 
 	public static BlockState getBlockStatePrimitive(String blockIdString, Marshaller m) {
-		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString));
+		Optional<Block> blockOpt = Registries.BLOCK.getOrEmpty(new Identifier(blockIdString));
 		if (blockOpt.isPresent()) {
 			return blockOpt.get().getDefaultState();
 		} else {
@@ -104,7 +104,7 @@ public class BlockAndItemSerializers {
 	public static BlockState getBlockState(JsonObject json, Marshaller m) {
 		String blockIdString = json.get(String.class, "block");
 
-		Block block = Registries.BLOCK.getOrEmpty(Identifier.of(blockIdString)).orElse(null);
+		Block block = Registries.BLOCK.getOrEmpty(new Identifier(blockIdString)).orElse(null);
 		if (block==null) return null;
 
 		BlockState state = block.getDefaultState();

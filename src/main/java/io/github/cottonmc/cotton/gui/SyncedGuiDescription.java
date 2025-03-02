@@ -559,6 +559,12 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 		return world instanceof ServerWorld ? NetworkSide.SERVER : NetworkSide.CLIENT;
 	}
 
+	/**
+	 * Gets the packet sender corresponding to this GUI's network side.
+	 *
+	 * @return the packet sender
+	 * @since 3.3.0
+	 */
 	public PacketSender getPacketSender() {
 		return new PacketSender(this, (ServerPlayerEntity) playerInventory.player);
 	}

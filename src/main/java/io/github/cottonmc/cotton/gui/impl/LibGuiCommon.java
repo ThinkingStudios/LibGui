@@ -6,6 +6,6 @@ public final class LibGuiCommon {
 	public static final String MOD_ID = "libgui";
 
 	public static Identifier id(String path) {
-		return Identifier.of(MOD_ID, path);
+		return new Identifier(MOD_ID, path);
 	}
 }

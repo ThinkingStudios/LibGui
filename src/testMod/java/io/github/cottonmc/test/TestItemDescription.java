@@ -1,5 +1,7 @@
 package io.github.cottonmc.test;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
@@ -18,8 +20,6 @@ import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.Color;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TestItemDescription extends ItemSyncedGuiDescription {
 	private int r = 0;
@@ -32,7 +32,7 @@ public class TestItemDescription extends ItemSyncedGuiDescription {
 		root.setInsets(Insets.ROOT_PANEL);
 		this.setRootPanel(root);
 		WLabel title = new WLabel(Text.literal("Client Test Gui"), WLabel.DEFAULT_TEXT_COLOR) {
-			@OnlyIn(Dist.CLIENT)
+			@Environment(EnvType.CLIENT)
 			@Override
 			public void addTooltip(TooltipBuilder tooltip) {
 				tooltip.add(Text.literal("Radical!"));
@@ -41,9 +41,9 @@ public class TestItemDescription extends ItemSyncedGuiDescription {
 		WTiledSprite wood = new WTiledSprite(
 				8, 8, // tile width and height
 				500, // animation speed
-				Identifier.ofVanilla("textures/block/birch_planks.png"),
-				Identifier.ofVanilla("textures/block/dark_oak_planks.png"),
-				Identifier.ofVanilla("textures/block/jungle_planks.png")
+				new Identifier("minecraft:textures/block/birch_planks.png"),
+				new Identifier("minecraft:textures/block/dark_oak_planks.png"),
+				new Identifier("minecraft:textures/block/jungle_planks.png")
 		);
 		root.add(wood, 3, 3, 2, 2);
 		root.add(title, 0, 0);

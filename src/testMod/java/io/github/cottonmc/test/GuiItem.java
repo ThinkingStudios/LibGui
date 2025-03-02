@@ -1,5 +1,6 @@
 package io.github.cottonmc.test;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -33,8 +34,7 @@ public class GuiItem extends Item {
 			case OFF_HAND -> EquipmentSlot.OFFHAND;
 		};
 		ItemStack stack = player.getStackInHand(hand);
-
-		return new NamedScreenHandlerFactory() {
+		return new ExtendedScreenHandlerFactory<EquipmentSlot>() {
 			@Override
 			public Text getDisplayName() {
 				return stack.getName();
@@ -43,6 +43,11 @@ public class GuiItem extends Item {
 			@Override
 			public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
 				return new TestItemDescription(syncId, playerInventory, StackReference.of(player, slot));
+			}
+
+			@Override
+			public EquipmentSlot getScreenOpeningData(ServerPlayerEntity player) {
+				return slot;
 			}
 		};
 	}
