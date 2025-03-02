@@ -1,7 +1,7 @@
-package org.thinkingstudio.libgui_foxified.events;
+package org.thinkingstudio.libgui_foxified.events.api;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+import org.thinkingstudio.libgui_foxified.base.api.Event;
+import org.thinkingstudio.libgui_foxified.base.api.EventFactory;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 

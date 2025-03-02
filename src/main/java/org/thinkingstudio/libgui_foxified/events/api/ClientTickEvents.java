@@ -1,8 +1,8 @@
-package org.thinkingstudio.libgui_foxified.events;
+package org.thinkingstudio.libgui_foxified.events.api;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.MinecraftClient;
+import org.thinkingstudio.libgui_foxified.base.api.Event;
+import org.thinkingstudio.libgui_foxified.base.api.EventFactory;
 
 public class ClientTickEvents {
 	/**

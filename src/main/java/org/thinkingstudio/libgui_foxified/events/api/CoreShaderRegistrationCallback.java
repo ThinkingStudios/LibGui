@@ -1,4 +1,4 @@
-package org.thinkingstudio.libgui_foxified.events;
+package org.thinkingstudio.libgui_foxified.events.api;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -8,8 +8,8 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.util.Identifier;
 
 import org.jetbrains.annotations.ApiStatus;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+import org.thinkingstudio.libgui_foxified.base.api.Event;
+import org.thinkingstudio.libgui_foxified.base.api.EventFactory;
 
 /**
  * Called when core shaders ({@linkplain ShaderProgram shader programs} loaded from {@code assets/<namespace>/shaders/core})

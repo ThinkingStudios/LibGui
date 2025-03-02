@@ -559,16 +559,30 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 		return world instanceof ServerWorld ? NetworkSide.SERVER : NetworkSide.CLIENT;
 	}
 
-	public void sendPacket(CustomPayload payload) {
-		if (getNetworkSide() == NetworkSide.SERVER) {
-			PacketDistributor.sendToPlayer((ServerPlayerEntity) playerInventory.player, payload);
-		} else {
-			sendToServer(payload);
-		}
+	public PacketSender getPacketSender() {
+		return new PacketSender(this, (ServerPlayerEntity) playerInventory.player);
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	private void sendToServer(CustomPayload payload) {
-		PacketDistributor.sendToServer(payload);
+	public static class PacketSender {
+		private final SyncedGuiDescription syncedGuiDescription;
+		private final ServerPlayerEntity serverPlayer;
+
+		public PacketSender(SyncedGuiDescription syncedGuiDescription, ServerPlayerEntity serverPlayer) {
+			this.syncedGuiDescription = syncedGuiDescription;
+			this.serverPlayer = serverPlayer;
+		}
+
+		public void sendPacket(CustomPayload payload) {
+			if (syncedGuiDescription.getNetworkSide() == NetworkSide.SERVER) {
+				PacketDistributor.sendToPlayer(serverPlayer, payload);
+			} else {
+				sendToServer(payload);
+			}
+		}
+
+		@OnlyIn(Dist.CLIENT)
+		private void sendToServer(CustomPayload payload) {
+			PacketDistributor.sendToServer(payload);
+		}
 	}
 }

@@ -83,14 +83,6 @@ dependencies {
 	}
 	neoForge "net.neoforged:neoforge:${project.neoforge_version}"
 
-	// ForgifiedFabricAPI
-	for (String module in ffapi_modules.split(",")) {
-		// Fabric API Base
-		if (module == "fabric-api-base") {
-			modApi(include("org.sinytra.forgified-fabric-api:$module:0.4.42+d1308ded19")) { transitive = false }
-		}
-	}
-
 	forgeRuntimeLibrary(implementation(include("blue.endless:jankson:1.2.3")))
 
 	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")

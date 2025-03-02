@@ -1,6 +1,6 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import org.thinkingstudio.libgui_foxified.events.CoreShaderRegistrationCallback;
+import org.thinkingstudio.libgui_foxified.events.api.CoreShaderRegistrationCallback;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.render.VertexFormats;
 

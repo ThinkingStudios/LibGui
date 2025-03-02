@@ -1,7 +1,7 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import org.thinkingstudio.libgui_foxified.events.ClientTickEvents;
-import org.thinkingstudio.libgui_foxified.events.HudRenderCallback;
+import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
+import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 

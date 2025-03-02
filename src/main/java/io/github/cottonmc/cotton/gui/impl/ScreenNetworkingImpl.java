@@ -85,16 +85,7 @@ public class ScreenNetworkingImpl implements ScreenNetworking {
 		var ops = getRegistryOps(description.getWorld().getRegistryManager());
 		NbtElement encoded = encoder.encodeStart(ops, data).getOrThrow();
 		ScreenMessage packet = new ScreenMessage(description.syncId, message, encoded);
-		description.sendPacket(packet);
-		//description.getPacketSender().sendPacket(packet);
-	}
-
-	public static void init() {
-//		PayloadTypeRegistry.playS2C().register(ScreenMessage.ID, ScreenMessage.CODEC);
-//		PayloadTypeRegistry.playC2S().register(ScreenMessage.ID, ScreenMessage.CODEC);
-//		ServerPlayNetworking.registerGlobalReceiver(ScreenMessage.ID, (payload, context) -> {
-//			handle(context.player().server, context.player(), payload);
-//		});
+		description.getPacketSender().sendPacket(packet);
 	}
 
 	public static void handle(Executor executor, PlayerEntity player, ScreenMessage packet) {
