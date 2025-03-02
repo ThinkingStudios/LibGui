@@ -1,6 +1,5 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.gui.DrawContext;
 
 import io.github.cottonmc.cotton.gui.GuiDescription;
@@ -11,6 +10,8 @@ import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
 
 import java.util.Objects;
 

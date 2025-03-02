@@ -50,7 +50,7 @@ public class FoxifiedEventsImpl {
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
 			final PayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID);
 
-			registrar.playToClient(ScreenNetworkingImpl.ScreenMessage.ID, ScreenNetworkingImpl.ScreenMessage.CODEC, (payload, context) -> {
+			registrar.playBidirectional(ScreenNetworkingImpl.ScreenMessage.ID, ScreenNetworkingImpl.ScreenMessage.CODEC, (payload, context) -> {
 				ScreenNetworkingImpl.handle(ServerLifecycleHooks.getCurrentServer(), context.player(), payload);
 			});
 		});
