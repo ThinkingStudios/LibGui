@@ -20,7 +20,7 @@ public class LibGuiClient {
 
 	public static final Jankson jankson = JanksonFactory.createJankson();
 
-	public void onInitializeClient() {
+	public static void onInitializeClient() {
 		config = loadConfig();
 
 		LibGuiShaders.register();
