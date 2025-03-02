@@ -1,6 +1,5 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.screen.PropertyDelegate;
 
 import io.github.cottonmc.cotton.gui.widget.WPanel;
@@ -10,6 +9,7 @@ import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
 
 /**
  * A GUI description represents a GUI without depending on screens.

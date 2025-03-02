@@ -4,8 +4,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.Lifecycle;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -88,14 +86,6 @@ public class ScreenNetworkingImpl implements ScreenNetworking {
 		NbtElement encoded = encoder.encodeStart(ops, data).getOrThrow();
 		ScreenMessage packet = new ScreenMessage(description.syncId, message, encoded);
 		description.getPacketSender().sendPacket(packet);
-	}
-
-	public static void init() {
-		PayloadTypeRegistry.playS2C().register(ScreenMessage.ID, ScreenMessage.CODEC);
-		PayloadTypeRegistry.playC2S().register(ScreenMessage.ID, ScreenMessage.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(ScreenMessage.ID, (payload, context) -> {
-			handle(context.player().server, context.player(), payload);
-		});
 	}
 
 	public static void handle(Executor executor, PlayerEntity player, ScreenMessage packet) {
