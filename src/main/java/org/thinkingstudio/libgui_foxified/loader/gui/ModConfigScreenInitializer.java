@@ -1,5 +1,7 @@
 package org.thinkingstudio.libgui_foxified.loader.gui;
 
+import net.neoforged.neoforge.client.ConfigScreenHandler;
+
 public interface ModConfigScreenInitializer {
-	ModConfigScreenFactory getModConfigScreenFactory();
+	ConfigScreenHandler.ConfigScreenFactory getModConfigScreenFactory();
 }

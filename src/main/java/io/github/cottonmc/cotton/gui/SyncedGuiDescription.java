@@ -169,7 +169,7 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	/** WILL MODIFY toInsert! Returns true if anything was inserted. */
 	private boolean insertIntoExisting(ItemStack toInsert, Slot slot, PlayerEntity player) {
 		ItemStack curSlotStack = slot.getStack();
-		if (!curSlotStack.isEmpty() && ItemStack.areItemsAndComponentsEqual(toInsert, curSlotStack) && slot.canInsert(toInsert)) {
+		if (!curSlotStack.isEmpty() && ItemStack.canCombine(toInsert, curSlotStack) && slot.canInsert(toInsert)) {
 			int combinedAmount = curSlotStack.getCount() + toInsert.getCount();
 			int maxAmount = Math.min(toInsert.getMaxCount(), slot.getMaxItemCount(toInsert));
 			if (combinedAmount <= maxAmount) {
@@ -542,14 +542,6 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	}
 
 	/**
-	 * {@return the world of this GUI description's player}
-	 * @since 10.0.0
-	 */
-	public World getWorld() {
-		return world;
-	}
-
-	/**
 	 * Gets the network side this GUI description runs on.
 	 *
 	 * @return this GUI's network side
@@ -566,29 +558,24 @@ public class SyncedGuiDescription extends ScreenHandler implements GuiDescriptio
 	 * @since 3.3.0
 	 */
 	public PacketSender getPacketSender() {
-		return new PacketSender(this, (ServerPlayerEntity) playerInventory.player);
+		return new PacketSender((ServerPlayerEntity) playerInventory.player);
 	}
 
 	public static class PacketSender {
-		private final SyncedGuiDescription syncedGuiDescription;
+
 		private final ServerPlayerEntity serverPlayer;
 
-		public PacketSender(SyncedGuiDescription syncedGuiDescription, ServerPlayerEntity serverPlayer) {
-			this.syncedGuiDescription = syncedGuiDescription;
+		public PacketSender(ServerPlayerEntity serverPlayer) {
 			this.serverPlayer = serverPlayer;
 		}
 
-		public void sendPacket(CustomPayload payload) {
-			if (syncedGuiDescription.getNetworkSide() == NetworkSide.SERVER) {
-				PacketDistributor.sendToPlayer(serverPlayer, payload);
-			} else {
-				sendToServer(payload);
-			}
+		public void sendToPlayer(CustomPayload payload) {
+			PacketDistributor.PLAYER.with(serverPlayer).send(payload);
 		}
 
 		@OnlyIn(Dist.CLIENT)
-		private void sendToServer(CustomPayload payload) {
-			PacketDistributor.sendToServer(payload);
+		public void sendToServer(CustomPayload payload) {
+			PacketDistributor.SERVER.noArg().send(payload);
 		}
 	}
 }

@@ -18,14 +18,14 @@ logoFile = "assets/libgui-test/icon.png"
 [[dependencies.libgui_test]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.5,)"
+versionRange = "[20.3,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.libgui_test]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.20.5,)"
+versionRange = "[1.20.3,)"
 ordering = "NONE"
 side = "BOTH"
 

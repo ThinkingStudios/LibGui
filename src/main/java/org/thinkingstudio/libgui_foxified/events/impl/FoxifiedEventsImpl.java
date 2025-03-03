@@ -8,17 +8,18 @@ import net.minecraft.client.gl.ShaderProgram;
 
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 
 import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
 import org.thinkingstudio.libgui_foxified.events.api.CoreShaderRegistrationCallback;
 import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
+import org.thinkingstudio.libgui_foxified.network.LibGuiC2SPacket;
+import org.thinkingstudio.libgui_foxified.network.LibGuiS2CPacket;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -38,20 +39,24 @@ public class FoxifiedEventsImpl {
 		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, RenderGuiEvent.Post.class, event -> {
 			HudRenderCallback.EVENT.invoker().onHudRender(event.getGuiGraphics(), event.getPartialTick());
 		});
-		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ClientTickEvent.Pre.class, event -> {
-			ClientTickEvents.START_CLIENT_TICK.invoker().onStartTick(MinecraftClient.getInstance());
-		});
-		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, ClientTickEvent.Post.class, event -> {
-			ClientTickEvents.END_CLIENT_TICK.invoker().onEndTick(MinecraftClient.getInstance());
+		NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, TickEvent.ClientTickEvent.class, event -> {
+			if (event.phase == TickEvent.Phase.START) {
+				ClientTickEvents.START_CLIENT_TICK.invoker().onStartTick(MinecraftClient.getInstance());
+			} else if (event.phase == TickEvent.Phase.END) {
+				ClientTickEvents.END_CLIENT_TICK.invoker().onEndTick(MinecraftClient.getInstance());
+			}
 		});
 	}
 
 	public static void registerCommonEvents(IEventBus modEventBus) {
-		modEventBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
-			final PayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID);
+		modEventBus.addListener(RegisterPayloadHandlerEvent.class, event -> {
+			final IPayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID).versioned(LibGuiCommon.MOD_ID);
 
-			registrar.playBidirectional(ScreenNetworkingImpl.ScreenMessage.ID, ScreenNetworkingImpl.ScreenMessage.CODEC, (payload, context) -> {
-				ScreenNetworkingImpl.handle(ServerLifecycleHooks.getCurrentServer(), context.player(), payload);
+			registrar.play(ScreenNetworkingImpl.SCREEN_MESSAGE_C2S, LibGuiC2SPacket::new, handler -> {
+				handler.server(LibGuiC2SPacket::handle);
+			});
+			registrar.play(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, LibGuiS2CPacket::new, handler -> {
+				handler.client(LibGuiS2CPacket::handle);
 			});
 		});
 	}

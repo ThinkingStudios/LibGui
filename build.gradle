@@ -80,7 +80,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered {
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-		mappings "dev.architectury:yarn-mappings-patch-neoforge:${project.yarn_patch}"
+		mappings "dev.architectury:yarn-mappings-patch-forge:${project.yarn_patch}"
 	}
 	neoForge "net.neoforged:neoforge:${project.neoforge_version}"
 

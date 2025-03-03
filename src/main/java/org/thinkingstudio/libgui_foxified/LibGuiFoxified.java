@@ -8,7 +8,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.ConfigScreenHandler;
 import org.thinkingstudio.libgui_foxified.events.impl.FoxifiedEventsImpl;
 
 @Mod(LibGuiCommon.MOD_ID)
@@ -18,7 +18,7 @@ public class LibGuiFoxified {
 		if (FMLLoader.getDist().isClient()) {
 			FoxifiedEventsImpl.registerClientEvents(modEventBus);
 			LibGuiClient.onInitializeClient();
-			modContainer.registerExtensionPoint(IConfigScreenFactory.class, new ModMenuSupport().getModConfigScreenFactory());
+			modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ModMenuSupport().getModConfigScreenFactory());
 		}
 	}
 }
