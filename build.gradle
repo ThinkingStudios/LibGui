@@ -1,8 +1,6 @@
 plugins {
-	id 'fabric-loom' version '1.1.+'
-	id 'io.github.juuxel.loom-quiltflower' version '1.8.0'
-	id 'maven-publish'
-	id 'checkstyle'
+	id 'idea'
+	id 'net.neoforged.moddev.legacyforge' version '2.0.78'
 }
 
 archivesBaseName = project.archives_base_name
@@ -13,38 +11,62 @@ sourceSets {
 	javadoc {
 	}
 
-	testMod {
-		compileClasspath += main.compileClasspath
-		runtimeClasspath += main.runtimeClasspath
-	}
+//	testMod {
+//		compileClasspath += main.compileClasspath
+//		runtimeClasspath += main.runtimeClasspath
+//	}
 }
 
-loom {
-	createRemapConfigurations(sourceSets.testMod)
+legacyForge {
+	version = "1.20.1-47.3.0"
+//	validateAccessTransformers = true
+	parchment {
+		minecraftVersion = '1.20.1'
+		mappingsVersion = '2023.09.03'
+	}
 
 	runs {
-		testModClient {
+		client {
 			client()
-			name = 'Test Mod Client'
-			source sourceSets.testMod
 		}
-
-		testModServer {
+		data {
+			data()
+		}
+		server {
 			server()
-			name = 'Test Mod Server'
-			source sourceSets.testMod
 		}
 	}
+
+	mods {
+		testproject {
+			sourceSet sourceSets.main
+		}
+	}
+//	createRemapConfigurations(sourceSets.testMod)
+//
+//	runs {
+//		testModClient {
+//			client()
+//			name = 'Test Mod Client'
+//			source sourceSets.testMod
+//		}
+//
+//		testModServer {
+//			server()
+//			name = 'Test Mod Server'
+//			source sourceSets.testMod
+//		}
+//	}
 }
 
 // Work around https://github.com/FabricMC/fabric-loom/issues/890.
-afterEvaluate {
-	for (def config : [configurations.apiElements, configurations.runtimeElements]) {
-		def parents = new HashSet<>(config.extendsFrom)
-		parents.removeIf { it.name.startsWith 'modTestMod' }
-		config.extendsFrom = parents
-	}
-}
+//afterEvaluate {
+//	for (def config : [configurations.apiElements, configurations.runtimeElements]) {
+//		def parents = new HashSet<>(config.extendsFrom)
+//		parents.removeIf { it.name.startsWith 'modTestMod' }
+//		config.extendsFrom = parents
+//	}
+//}
 
 repositories {
 	maven {
@@ -53,59 +75,62 @@ repositories {
 			includeGroup "io.github.cottonmc"
 		}
 	}
-	maven {
-		url = "https://maven.terraformersmc.com/releases"
-		content {
-			includeGroup "com.terraformersmc"
-		}
-	}
+	maven { url "https://jitpack.io" }
+	maven { url "https://maven.su5ed.dev/releases" }
+}
+
+mixin {
+	add sourceSets.main, 'mixins.libgui.refmap.json'
+	config 'mixins.libgui.json' // This can be done for multiple configs
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
+//	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+//	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+//	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+//	implementation(include("blue.endless:jankson:1.2.3"))
+//	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 	// True: module classes are used in public API classes/methods/fields
-	def fabricApiModules = [
-			'fabric-api-base': true,
-			'fabric-lifecycle-events-v1': false,
-			'fabric-networking-api-v1': true,
-			'fabric-rendering-v1': false,
-	]
-	fabricApiModules.forEach { module, api ->
-		def dependency = fabricApi.module(module, project.fabric_version)
+//	def fabricApiModules = [
+//			'fabric-api-base': true,
+//			'fabric-lifecycle-events-v1': false,
+//			'fabric-networking-api-v1': true,
+//			'fabric-rendering-v1': false,
+//	]
+//	fabricApiModules.forEach { module, api ->
+//		def dependency = fabricApi.module(module, project.fabric_version)
+//
+//		if (api) {
+//			modApi dependency
+//		} else {
+//			modImplementation dependency
+//		}
+//	}
 
-		if (api) {
-			modApi dependency
-		} else {
-			modImplementation dependency
-		}
-	}
+//	modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+//	include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 
-	modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-	include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+//	include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
 
-	include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
-
-	modCompileOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-		exclude group: 'net.fabricmc.fabric-api'
-		exclude group: 'net.fabricmc', module: 'fabric-loader'
-	}
+//	modCompileOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
+//		exclude group: 'net.fabricmc.fabric-api'
+//		exclude group: 'net.fabricmc', module: 'fabric-loader'
+//	}
 
 	// Test mod dependencies
-	testModImplementation sourceSets.main.output
-	modTestModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modTestModRuntimeOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-		exclude group: 'net.fabricmc.fabric-api'
-		exclude group: 'net.fabricmc', module: 'fabric-loader'
-	}
+//	testModImplementation sourceSets.main.output
+//	modTestModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+//	modTestModRuntimeOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
+//		exclude group: 'net.fabricmc.fabric-api'
+//		exclude group: 'net.fabricmc', module: 'fabric-loader'
+//	}
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
+	filesMatching("META-INF/mods.toml") {
 		expand "version": project.version
 	}
 }
@@ -128,12 +153,9 @@ tasks.withType(JavaCompile) {
 
 jar {
 	from "CREDITS.txt", "LICENSE"
-}
-
-checkstyle {
-	configFile = rootProject.file('checkstyle.xml')
-	configProperties = [suppressions: rootProject.file('checkstyle.suppressions.xml').absolutePath]
-	toolVersion = '10.9.2'
+	manifest.attributes([
+		"MixinConfigs": "mixins.mymod.json"
+	])
 }
 
 def javadocBuildJar = tasks.register('javadocBuildJar', Jar) {
@@ -156,42 +178,59 @@ javadoc {
 	exclude("**/impl/**")
 }
 
-// configure the maven publication
-publishing {
-	publications {
-		maven(MavenPublication) {
-			from components.java
-			pom {
-				name = "LibGui"
-				description = "Minecraft GUI Library"
-				url = "https://github.com/CottonMC/LibGui"
-				licenses {
-					license {
-						name = "MIT"
-						url = "https://github.com/CottonMC/LibGui/blob/HEAD/LICENSE"
-					}
-				}
-				developers {
-					developer {
-						name = "CottonMC"
-						url = "https://github.com/CottonMC"
-					}
-				}
-			}
-		}
-	}
-
-	// select the repositories you want to publish to
-	repositories {
-		def env = System.getenv()
-		if (env.MAVEN_URL) {
-			maven {
-				url = env.MAVEN_URL
-				credentials {
-					username = env.MAVEN_USERNAME
-					password = env.MAVEN_PASSWORD
-				}
-			}
-		}
-	}
-}
+//publisher {
+//	apiKeys.modrinth(System.getenv("MODRINTH_TOKEN"))
+//	apiKeys.curseforge(System.getenv("CURSEFORGE_TOKEN"))
+//
+//	curseID = "$project.curseforge_id"
+//	modrinthID = "$project.modrinth_id"
+//	versionType = "alpha"
+//	changelog = file("CHANGELOG.md").getText("UTF-8")
+//	displayName = "$project.version"
+//	gameVersions = ["1.20.1"]
+//	loaders = loom.platform.get().id()
+//	setVersion("$project.version")
+//	setArtifact(remapJar)
+//	addAdditionalFile(sourcesJar)
+//}
+//
+//// configure the maven publication
+//publishing {
+//	publications {
+//		maven(MavenPublication) {
+//			from components.java
+//			pom {
+//				name = "LibGuiFoxified"
+//				description = "Minecraft GUI Library"
+//				url = "https://github.com/ThinkingStudios/LibGuiFoxified"
+//				licenses {
+//					license {
+//						name = "MIT"
+//						url = "https://github.com/ThinkingStudios/LibGuiFoxified/blob/HEAD/LICENSE"
+//					}
+//				}
+//				developers {
+//					developer {
+//						name = "ThinkingStudio"
+//						url = "https://github.com/ThinkingStudios"
+//					}
+//				}
+//			}
+//		}
+//	}
+//
+//	// select the repositories you want to publish to
+//	repositories {
+//		maven {
+//			name = "cloudsmith"
+//			url = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+//			def releasesRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+//			def snapshotsRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+//			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//			credentials {
+//				username = 'tex-true'
+//				password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
+//			}
+//		}
+//	}
+//}
