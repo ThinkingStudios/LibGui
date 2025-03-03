@@ -1,19 +1,16 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.ValidatedSlot;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
@@ -25,6 +22,8 @@ import io.github.cottonmc.cotton.gui.widget.data.Rect2i;
 import io.github.cottonmc.cotton.gui.widget.focus.Focus;
 import io.github.cottonmc.cotton.gui.widget.focus.FocusModel;
 import io.github.cottonmc.cotton.gui.widget.icon.Icon;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -79,16 +78,16 @@ public class WItemSlot extends WWidget {
 	 *
 	 * @since 6.2.0
 	 */
-	public static final Identifier SLOT_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/item_slot.png");
+	public static final ResourceLocation SLOT_TEXTURE = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/item_slot.png");
 
 	private static final VisualLogger LOGGER = new VisualLogger(WItemSlot.class);
 	private final List<ValidatedSlot> peers = new ArrayList<>();
 	@Nullable
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private BackgroundPainter backgroundPainter;
 	@Nullable
 	private Icon icon = null;
-	private Inventory inventory;
+	private Container inventory;
 	private int startIndex = 0;
 	private int slotsWide = 1;
 	private int slotsHigh = 1;
@@ -137,7 +136,7 @@ public class WItemSlot extends WWidget {
 		}
 	};
 
-	public WItemSlot(Inventory inventory, int startIndex, int slotsWide, int slotsHigh, boolean big) {
+	public WItemSlot(Container inventory, int startIndex, int slotsWide, int slotsHigh, boolean big) {
 		this();
 		this.inventory = inventory;
 		this.startIndex = startIndex;
@@ -154,7 +153,7 @@ public class WItemSlot extends WWidget {
 		});
 	}
 	
-	public static WItemSlot of(Inventory inventory, int index) {
+	public static WItemSlot of(Container inventory, int index) {
 		WItemSlot w = new WItemSlot();
 		w.inventory = inventory;
 		w.startIndex = index;
@@ -162,7 +161,7 @@ public class WItemSlot extends WWidget {
 		return w;
 	}
 	
-	public static WItemSlot of(Inventory inventory, int startIndex, int slotsWide, int slotsHigh) {
+	public static WItemSlot of(Container inventory, int startIndex, int slotsWide, int slotsHigh) {
 		WItemSlot w = new WItemSlot();
 		w.inventory = inventory;
 		w.startIndex = startIndex;
@@ -172,7 +171,7 @@ public class WItemSlot extends WWidget {
 		return w;
 	}
 	
-	public static WItemSlot outputOf(Inventory inventory, int index) {
+	public static WItemSlot outputOf(Container inventory, int index) {
 		WItemSlot w = new WItemSlot();
 		w.inventory = inventory;
 		w.startIndex = index;
@@ -188,11 +187,11 @@ public class WItemSlot extends WWidget {
 	 * @return the created slot widget
 	 * @see WPlayerInvPanel
 	 */
-	public static WItemSlot ofPlayerStorage(Inventory inventory) {
+	public static WItemSlot ofPlayerStorage(Container inventory) {
 		WItemSlot w = new WItemSlot() {
 			@Override
-			protected Text getNarrationName() {
-				return inventory instanceof PlayerInventory inv ? inv.getDisplayName() : NarrationMessages.Vanilla.INVENTORY;
+			protected Component getNarrationName() {
+				return inventory instanceof Inventory inv ? inv.getDisplayName() : NarrationMessages.Vanilla.INVENTORY;
 			}
 		};
 		w.inventory = inventory;
@@ -354,15 +353,15 @@ public class WItemSlot extends WWidget {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onKeyPressed(int ch, int key, int modifiers) {
-		if (isActivationKey(ch) && host instanceof ScreenHandler && focusedSlot >= 0) {
-			ScreenHandler handler = (ScreenHandler) host;
-			MinecraftClient client = MinecraftClient.getInstance();
+		if (isActivationKey(ch) && host instanceof AbstractContainerMenu && focusedSlot >= 0) {
+			AbstractContainerMenu handler = (AbstractContainerMenu) host;
+			Minecraft client = Minecraft.getInstance();
 
 			ValidatedSlot peer = peers.get(focusedSlot);
-			client.interactionManager.clickSlot(handler.syncId, peer.id, 0, SlotActionType.PICKUP, client.player);
+			client.gameMode.handleInventoryMouseClick(handler.containerId, peer.index, 0, ClickType.PICKUP, client.player);
 			return InputResult.PROCESSED;
 		}
 
@@ -379,7 +378,7 @@ public class WItemSlot extends WWidget {
 	 * @return the created slot instance
 	 * @since 1.11.0
 	 */
-	protected ValidatedSlot createSlotPeer(Inventory inventory, int index, int x, int y) {
+	protected ValidatedSlot createSlotPeer(Container inventory, int index, int x, int y) {
 		return new ValidatedSlot(inventory, index, x, y);
 	}
 
@@ -390,7 +389,7 @@ public class WItemSlot extends WWidget {
 	 * @since 2.0.0
 	 */
 	@Nullable
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public BackgroundPainter getBackgroundPainter() {
 		return backgroundPainter;
 	}
@@ -400,7 +399,7 @@ public class WItemSlot extends WWidget {
 	 *
 	 * @param painter the new painter
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void setBackgroundPainter(@Nullable BackgroundPainter painter) {
 		this.backgroundPainter = painter;
 	}
@@ -480,9 +479,9 @@ public class WItemSlot extends WWidget {
 		return setInputFilter(filter);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter != null) {
 			backgroundPainter.paintBackground(context, x, y, this);
 		}
@@ -544,26 +543,26 @@ public class WItemSlot extends WWidget {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addPainters() {
 		backgroundPainter = BackgroundPainter.SLOT;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationMessageBuilder builder) {
-		List<Text> parts = new ArrayList<>();
-		Text name = getNarrationName();
+	public void addNarrations(NarrationElementOutput builder) {
+		List<Component> parts = new ArrayList<>();
+		Component name = getNarrationName();
 		if (name != null) parts.add(name);
 
 		if (focusedSlot >= 0) {
-			parts.add(Text.translatable(NarrationMessages.ITEM_SLOT_TITLE_KEY, focusedSlot + 1, slotsWide * slotsHigh));
+			parts.add(Component.translatable(NarrationMessages.ITEM_SLOT_TITLE_KEY, focusedSlot + 1, slotsWide * slotsHigh));
 		} else if (hoveredSlot >= 0) {
-			parts.add(Text.translatable(NarrationMessages.ITEM_SLOT_TITLE_KEY, hoveredSlot + 1, slotsWide * slotsHigh));
+			parts.add(Component.translatable(NarrationMessages.ITEM_SLOT_TITLE_KEY, hoveredSlot + 1, slotsWide * slotsHigh));
 		}
 
-		builder.put(NarrationPart.TITLE, parts.toArray(new Text[0]));
+		builder.add(NarratedElementType.TITLE, parts.toArray(new Component[0]));
 	}
 
 	/**
@@ -574,7 +573,7 @@ public class WItemSlot extends WWidget {
 	 * @since 4.2.0
 	 */
 	@Nullable
-	protected Text getNarrationName() {
+	protected Component getNarrationName() {
 		return null;
 	}
 
@@ -593,6 +592,6 @@ public class WItemSlot extends WWidget {
 		 * @param index     the index of the slot in the inventory
 		 * @param stack     the changed item stack
 		 */
-		void onStackChanged(WItemSlot slot, Inventory inventory, int index, ItemStack stack);
+		void onStackChanged(WItemSlot slot, Container inventory, int index, ItemStack stack);
 	}
 }

@@ -1,12 +1,11 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class WSprite extends WWidget {
 	protected int currentFrame= 0;
@@ -31,7 +30,7 @@ public class WSprite extends WWidget {
 	 * Create a new sprite with a single image.
 	 * @param image The location of the image to display.
 	 */
-	public WSprite(Identifier image) {
+	public WSprite(ResourceLocation image) {
 		this(new Texture(image));
 	}
 
@@ -44,7 +43,7 @@ public class WSprite extends WWidget {
 	 * @param u2 the right edge of the texture
 	 * @param v2 the bottom edge of the texture
 	 */
-	public WSprite(Identifier image, float u1, float v1, float u2, float v2) {
+	public WSprite(ResourceLocation image, float u1, float v1, float u2, float v2) {
 		this(new Texture(image, u1, v1, u2, v2));
 	}
 
@@ -53,7 +52,7 @@ public class WSprite extends WWidget {
 	 * @param frameTime How long in milliseconds to display for. (1 tick = 50 ms)
 	 * @param frames The locations of the frames of the animation.
 	 */
-	public WSprite(int frameTime, Identifier... frames) {
+	public WSprite(int frameTime, ResourceLocation... frames) {
 		this.frameTime = frameTime;
 		this.frames = new Texture[frames.length];
 
@@ -82,7 +81,7 @@ public class WSprite extends WWidget {
 	 * @param image the new image
 	 * @return this sprite
 	 */
-	public WSprite setImage(Identifier image) {
+	public WSprite setImage(ResourceLocation image) {
 		return setImage(new Texture(image));
 	}
 
@@ -92,7 +91,7 @@ public class WSprite extends WWidget {
 	 * @param frames the frames
 	 * @return this sprite
 	 */
-	public WSprite setFrames(Identifier... frames) {
+	public WSprite setFrames(ResourceLocation... frames) {
 		Texture[] textures = new Texture[frames.length];
 		for (int i = 0; i < frames.length; i++) {
 			textures[i] = new Texture(frames[i]);
@@ -180,9 +179,9 @@ public class WSprite extends WWidget {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		if (singleImage) {
 			paintFrame(context, x, y, frames[0]);
 		} else {
@@ -221,8 +220,8 @@ public class WSprite extends WWidget {
 	 * @param y       the Y coordinate to draw it at
 	 * @param texture the texture to draw
 	 */
-	@Environment(EnvType.CLIENT)
-	protected void paintFrame(DrawContext context, int x, int y, Texture texture) {
+	@OnlyIn(Dist.CLIENT)
+	protected void paintFrame(GuiGraphics context, int x, int y, Texture texture) {
 		ScreenDrawing.texturedRect(context, x, y, getWidth(), getHeight(), texture, tint);
 	}
 }

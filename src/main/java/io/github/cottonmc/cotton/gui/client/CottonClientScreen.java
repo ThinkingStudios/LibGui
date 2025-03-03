@@ -1,12 +1,5 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.impl.VisualLogger;
 import io.github.cottonmc.cotton.gui.impl.client.CottonScreenImpl;
@@ -17,6 +10,12 @@ import io.github.cottonmc.cotton.gui.impl.mixin.client.ScreenAccessor;
 import io.github.cottonmc.cotton.gui.widget.WPanel;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
@@ -48,10 +47,10 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 	private final MouseInputHandler<CottonClientScreen> mouseInputHandler = new MouseInputHandler<>(this);
 
 	public CottonClientScreen(GuiDescription description) {
-		this(ScreenTexts.EMPTY, description);
+		this(CommonComponents.EMPTY, description);
 	}
 
-	public CottonClientScreen(Text title, GuiDescription description) {
+	public CottonClientScreen(Component title, GuiDescription description) {
 		super(title);
 		this.description = description;
 		description.getRootPanel().validate(description);
@@ -72,7 +71,7 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 		reposition(width, height);
 
 		if (root != null) {
-			Element rootPanelElement = FocusElements.ofPanel(root);
+			GuiEventListener rootPanelElement = FocusElements.ofPanel(root);
 			((ScreenAccessor) this).libgui$getChildren().add(rootPanelElement);
 			setInitialFocus(rootPanelElement);
 		} else {
@@ -123,7 +122,7 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 		}
 	}
 
-	private void paint(DrawContext context, int mouseX, int mouseY) {
+	private void paint(GuiGraphics context, int mouseX, int mouseY) {
 		renderBackground(context);
 
 		if (description!=null) {
@@ -138,13 +137,13 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 
 			if (getTitle() != null && description.isTitleVisible()) {
 				int width = description.getRootPanel().getWidth();
-				ScreenDrawing.drawString(context, getTitle().asOrderedText(), description.getTitleAlignment(), left + titleX, top + titleY, width - 2 * titleX, description.getTitleColor());
+				ScreenDrawing.drawString(context, getTitle().getVisualOrderText(), description.getTitleAlignment(), left + titleX, top + titleY, width - 2 * titleX, description.getTitleColor());
 			}
 		}
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float partialTicks) {
 		paint(context, mouseX, mouseY);
 		
 		super.render(context, mouseX, mouseY, partialTicks);
@@ -257,7 +256,7 @@ public class CottonClientScreen extends Screen implements CottonScreenImpl {
 	}
 
 	@Override
-	protected void addElementNarrations(NarrationMessageBuilder builder) {
+	protected void updateNarratedWidget(NarrationElementOutput builder) {
 		if (description != null) NarrationHelper.addNarrations(description.getRootPanel(), builder);
 	}
 }

@@ -1,9 +1,14 @@
 plugins {
+	id 'eclipse'
 	id 'idea'
+	id 'maven-publish'
 	id 'net.neoforged.moddev.legacyforge' version '2.0.78'
 }
 
-archivesBaseName = project.archives_base_name
+base {
+	archivesName = project.archives_base_name
+}
+
 version = "$project.mod_version+$project.minecraft_version"
 group = project.maven_group
 
@@ -88,8 +93,10 @@ dependencies {
 //	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 //	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 //	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-//	implementation(include("blue.endless:jankson:1.2.3"))
-//	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+
+	implementation 'org.jetbrains:annotations:24.0.1'
+	implementation(jarJar("blue.endless:jankson:1.2.3"))
+	jarJar api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 	// True: module classes are used in public API classes/methods/fields
 //	def fabricApiModules = [
@@ -188,49 +195,49 @@ javadoc {
 //	changelog = file("CHANGELOG.md").getText("UTF-8")
 //	displayName = "$project.version"
 //	gameVersions = ["1.20.1"]
-//	loaders = loom.platform.get().id()
+//	loaders = forge
 //	setVersion("$project.version")
 //	setArtifact(remapJar)
 //	addAdditionalFile(sourcesJar)
 //}
 //
-//// configure the maven publication
-//publishing {
-//	publications {
-//		maven(MavenPublication) {
-//			from components.java
-//			pom {
-//				name = "LibGuiFoxified"
-//				description = "Minecraft GUI Library"
-//				url = "https://github.com/ThinkingStudios/LibGuiFoxified"
-//				licenses {
-//					license {
-//						name = "MIT"
-//						url = "https://github.com/ThinkingStudios/LibGuiFoxified/blob/HEAD/LICENSE"
-//					}
-//				}
-//				developers {
-//					developer {
-//						name = "ThinkingStudio"
-//						url = "https://github.com/ThinkingStudios"
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	// select the repositories you want to publish to
-//	repositories {
-//		maven {
-//			name = "cloudsmith"
-//			url = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
-//			def releasesRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
-//			def snapshotsRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
-//			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-//			credentials {
-//				username = 'tex-true'
-//				password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
-//			}
-//		}
-//	}
-//}
+// configure the maven publication
+publishing {
+	publications {
+		maven(MavenPublication) {
+			from components.java
+			pom {
+				name = "LibGuiFoxified"
+				description = "Minecraft GUI Library"
+				url = "https://github.com/ThinkingStudios/LibGuiFoxified"
+				licenses {
+					license {
+						name = "MIT"
+						url = "https://github.com/ThinkingStudios/LibGuiFoxified/blob/HEAD/LICENSE"
+					}
+				}
+				developers {
+					developer {
+						name = "ThinkingStudio"
+						url = "https://github.com/ThinkingStudios"
+					}
+				}
+			}
+		}
+	}
+
+	// select the repositories you want to publish to
+	repositories {
+		maven {
+			name = "cloudsmith"
+			url = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			def releasesRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			def snapshotsRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/libguifoxified/"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			credentials {
+				username = 'tex-true'
+				password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
+			}
+		}
+	}
+}

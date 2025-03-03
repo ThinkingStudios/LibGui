@@ -1,42 +1,39 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
-
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
-import io.github.cottonmc.jankson.JanksonFactory;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.thinkingstudio.libgui_foxified.jankson.JanksonFactory;
+import org.thinkingstudio.libgui_foxified.loader.FoxifiedLoader;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class LibGuiClient implements ClientModInitializer {
+public class LibGuiClient {
 	public static final Logger logger = LogManager.getLogger();
 	public static volatile LibGuiConfig config;
 
 	public static final Jankson jankson = JanksonFactory.createJankson();
 
-	@Override
-	public void onInitializeClient() {
+	public static void onInitializeClient() {
 		config = loadConfig();
 
-		ClientPlayNetworking.registerGlobalReceiver(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, (client, networkHandler, buf, responseSender) -> {
-			ScreenNetworkingImpl.handle(client, client.player, buf);
-		});
+//		ClientPlayNetworking.registerGlobalReceiver(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, (client, networkHandler, buf, responseSender) -> {
+//			ScreenNetworkingImpl.handle(client, client.player, buf);
+//		});
 
-		LibGuiShaders.register();
+//		LibGuiShaders.register();
 	}
 
 	public static LibGuiConfig loadConfig() {
 		try {
-			Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
+			Path file = FoxifiedLoader.getConfigDir().resolve("libgui.json5");
 			
 			if (Files.notExists(file)) saveConfig(new LibGuiConfig());
 			
@@ -63,7 +60,7 @@ public class LibGuiClient implements ClientModInitializer {
 
 	public static void saveConfig(LibGuiConfig config) {
 		try {
-			Path file = FabricLoader.getInstance().getConfigDir().resolve("libgui.json5");
+			Path file = FoxifiedLoader.getConfigDir().resolve("libgui.json5");
 			
 			JsonElement json = jankson.toJson(config);
 			String result = json.toJson(true, true);

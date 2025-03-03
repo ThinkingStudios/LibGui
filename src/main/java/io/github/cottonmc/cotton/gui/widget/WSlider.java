@@ -1,14 +1,13 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 public class WSlider extends WAbstractSlider {
 	public static final int TRACK_WIDTH = 6;
 	public static final int THUMB_SIZE = 8;
-	public static final Identifier LIGHT_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/slider_light.png");
-	public static final Identifier DARK_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/slider_dark.png");
+	public static final ResourceLocation LIGHT_TEXTURE = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/slider_light.png");
+	public static final ResourceLocation DARK_TEXTURE = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/slider_dark.png");
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	private BackgroundPainter backgroundPainter;
 
@@ -46,9 +45,9 @@ public class WSlider extends WAbstractSlider {
 	}
 
 	@SuppressWarnings("SuspiciousNameCombination")
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter != null) {
 			backgroundPainter.paintBackground(context, x, y, this);
 		} else {
@@ -57,7 +56,7 @@ public class WSlider extends WAbstractSlider {
 			int thumbX, thumbY;
 			// thumbXOffset: thumb texture x offset in pixels
 			int thumbXOffset;
-			Identifier texture = shouldRenderInDarkMode() ? DARK_TEXTURE : LIGHT_TEXTURE;
+			ResourceLocation texture = shouldRenderInDarkMode() ? DARK_TEXTURE : LIGHT_TEXTURE;
 
 			if (axis == Axis.VERTICAL) {
 				int trackX = x + width / 2 - TRACK_WIDTH / 2;
@@ -94,13 +93,13 @@ public class WSlider extends WAbstractSlider {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public BackgroundPainter getBackgroundPainter() {
 		return backgroundPainter;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void setBackgroundPainter(@Nullable BackgroundPainter backgroundPainter) {
 		this.backgroundPainter = backgroundPainter;
 	}

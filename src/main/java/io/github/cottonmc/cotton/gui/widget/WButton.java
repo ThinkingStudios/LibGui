@@ -1,30 +1,29 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.icon.Icon;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public class WButton extends WWidget {
-	private static final Identifier DARK_WIDGETS_LOCATION = new Identifier("libgui", "textures/widget/dark_widgets.png");
+	private static final ResourceLocation DARK_WIDGETS_LOCATION = new ResourceLocation("libgui", "textures/widget/dark_widgets.png");
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int ICON_SPACING = 2;
 
-	@Nullable private Text label;
+	@Nullable private Component label;
 	protected int color = WLabel.DEFAULT_TEXT_COLOR;
 	protected int darkmodeColor = WLabel.DEFAULT_TEXT_COLOR;
 	/**
@@ -60,7 +59,7 @@ public class WButton extends WWidget {
 	 *
 	 * @param label the label
 	 */
-	public WButton(@Nullable Text label) {
+	public WButton(@Nullable Component label) {
 		this.label = label;
 	}
 
@@ -71,7 +70,7 @@ public class WButton extends WWidget {
 	 * @param label the label
 	 * @since 2.2.0
 	 */
-	public WButton(@Nullable Icon icon, @Nullable Text label) {
+	public WButton(@Nullable Icon icon, @Nullable Component label) {
 		this.icon = icon;
 		this.label = label;
 	}
@@ -86,9 +85,9 @@ public class WButton extends WWidget {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		boolean hovered = (mouseX>=0 && mouseY>=0 && mouseX<getWidth() && mouseY<getHeight());
 		int state = 1; //1=regular. 2=hovered. 0=disabled.
 		if (!enabled) {
@@ -107,7 +106,7 @@ public class WButton extends WWidget {
 		
 		float buttonEndLeft = (200-(getWidth()/2)) * px;
 
-		Identifier texture = getTexture(this);
+		ResourceLocation texture = getTexture(this);
 		ScreenDrawing.texturedRect(context, x, y, getWidth()/2, 20, texture, buttonLeft, buttonTop, buttonLeft+buttonWidth, buttonTop+buttonHeight, 0xFFFFFFFF);
 		ScreenDrawing.texturedRect(context, x+(getWidth()/2), y, getWidth()/2, 20, texture, buttonEndLeft, buttonTop, 200*px, buttonTop+buttonHeight, 0xFFFFFFFF);
 
@@ -124,7 +123,7 @@ public class WButton extends WWidget {
 			}*/
 
 			int xOffset = (icon != null && alignment == HorizontalAlignment.LEFT) ? ICON_SPACING+iconSize+ICON_SPACING : 0;
-			ScreenDrawing.drawStringWithShadow(context, label.asOrderedText(), alignment, x + xOffset, y + ((20 - 8) / 2), width, color); //LibGuiClient.config.darkMode ? darkmodeColor : color);
+			ScreenDrawing.drawStringWithShadow(context, label.getVisualOrderText(), alignment, x + xOffset, y + ((20 - 8) / 2), width, color); //LibGuiClient.config.darkMode ? darkmodeColor : color);
 		}
 	}
 	
@@ -133,13 +132,13 @@ public class WButton extends WWidget {
 		super.setSize(x, BUTTON_HEIGHT);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onClick(int x, int y, int button) {
 		super.onClick(x, y, button);
 		
 		if (enabled && isWithinBounds(x, y)) {
-			MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 
 			if (onClick!=null) onClick.run();
 			return InputResult.PROCESSED;
@@ -148,7 +147,7 @@ public class WButton extends WWidget {
 		return InputResult.IGNORED;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onKeyPressed(int ch, int key, int modifiers) {
 		if (isActivationKey(ch)) {
@@ -190,11 +189,11 @@ public class WButton extends WWidget {
 		return this;
 	}
 
-	public @Nullable Text getLabel() {
+	public @Nullable Component getLabel() {
 		return label;
 	}
 
-	public WButton setLabel(Text label) {
+	public WButton setLabel(Component label) {
 		this.label = label;
 		return this;
 	}
@@ -253,22 +252,22 @@ public class WButton extends WWidget {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, ClickableWidget.getNarrationMessage(getLabel()));
+	public void addNarrations(NarrationElementOutput builder) {
+		builder.add(NarratedElementType.TITLE, AbstractWidget.wrapDefaultNarrationMessage(getLabel()));
 
 		if (isEnabled()) {
 			if (isFocused()) {
-				builder.put(NarrationPart.USAGE, NarrationMessages.Vanilla.BUTTON_USAGE_FOCUSED);
+				builder.add(NarratedElementType.USAGE, NarrationMessages.Vanilla.BUTTON_USAGE_FOCUSED);
 			} else if (isHovered()) {
-				builder.put(NarrationPart.USAGE, NarrationMessages.Vanilla.BUTTON_USAGE_HOVERED);
+				builder.add(NarratedElementType.USAGE, NarrationMessages.Vanilla.BUTTON_USAGE_HOVERED);
 			}
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	static Identifier getTexture(WWidget widget) {
-		return widget.shouldRenderInDarkMode() ? DARK_WIDGETS_LOCATION : ClickableWidget.WIDGETS_TEXTURE;
+	@OnlyIn(Dist.CLIENT)
+	static ResourceLocation getTexture(WWidget widget) {
+		return widget.shouldRenderInDarkMode() ? DARK_WIDGETS_LOCATION : AbstractWidget.WIDGETS_LOCATION;
 	}
 }

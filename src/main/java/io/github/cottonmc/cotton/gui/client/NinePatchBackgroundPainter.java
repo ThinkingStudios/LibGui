@@ -1,14 +1,13 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import io.github.cottonmc.cotton.gui.impl.client.NinePatchTextureRendererImpl;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
 import juuxel.libninepatch.NinePatch;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.function.Consumer;
 
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
  * The edges and the center are either tiled or stretched, depending on the mode of the painter,
  * to fill the area between the corners. By default, the texture is tiled.
  *
- * <p>Nine-patch background painters can be created using {@link BackgroundPainter#createNinePatch(Identifier)},
+ * <p>Nine-patch background painters can be created using {@link BackgroundPainter#createNinePatch(ResourceLocation)},
  * {@link #createNinePatch(Texture, Consumer)}, or with the constructor directly. The latter two let you customise
  * the look of the background more finely.
  *
@@ -27,15 +26,15 @@ import java.util.function.Consumer;
  *
  * @since 4.0.0
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class NinePatchBackgroundPainter implements BackgroundPainter {
-	private final NinePatch<Identifier> ninePatch;
+	private final NinePatch<ResourceLocation> ninePatch;
 	private int topPadding = 0;
 	private int leftPadding = 0;
 	private int bottomPadding = 0;
 	private int rightPadding = 0;
 
-	public NinePatchBackgroundPainter(NinePatch<Identifier> ninePatch) {
+	public NinePatchBackgroundPainter(NinePatch<ResourceLocation> ninePatch) {
 		this.ninePatch = ninePatch;
 	}
 
@@ -96,11 +95,11 @@ public final class NinePatchBackgroundPainter implements BackgroundPainter {
 	}
 
 	@Override
-	public void paintBackground(DrawContext context, int left, int top, WWidget panel) {
-		var matrices = context.getMatrices();
-		matrices.push();
+	public void paintBackground(GuiGraphics context, int left, int top, WWidget panel) {
+		var matrices = context.pose();
+		matrices.pushPose();
 		matrices.translate(left - leftPadding, top - topPadding, 0);
 		ninePatch.draw(NinePatchTextureRendererImpl.INSTANCE, context, panel.getWidth() + leftPadding + rightPadding, panel.getHeight() + topPadding + bottomPadding);
-		matrices.pop();
+		matrices.popPose();
 	}
 }

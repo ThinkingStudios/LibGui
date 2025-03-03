@@ -1,25 +1,24 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.util.Identifier;
-
-import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
+import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.Nullable;
 
 public final class LibGuiShaders {
-	private static @Nullable ShaderProgram tiledRectangle;
+	private static @Nullable ShaderInstance tiledRectangle;
 
-	static void register() {
-		CoreShaderRegistrationCallback.EVENT.register(context -> {
-			// Register our core shaders.
-			// The tiled rectangle shader is used for performant tiled texture rendering.
-			context.register(new Identifier(LibGuiCommon.MOD_ID, "tiled_rectangle"), VertexFormats.POSITION, program -> tiledRectangle = program);
-		});
+	public static void setTiledRectangle(ShaderInstance tiledRectangle) {
+		LibGuiShaders.tiledRectangle = tiledRectangle;
 	}
 
-	private static ShaderProgram assertPresent(ShaderProgram program, String name) {
+	static void register() {
+//		CoreShaderRegistrationCallback.EVENT.register(context -> {
+//			// Register our core shaders.
+//			// The tiled rectangle shader is used for performant tiled texture rendering.
+//			context.register(new ResourceLocation(LibGuiCommon.MOD_ID, "tiled_rectangle"), DefaultVertexFormat.POSITION, program -> tiledRectangle = program);
+//		});
+	}
+
+	private static ShaderInstance assertPresent(ShaderInstance program, String name) {
 		if (program == null) {
 			throw new NullPointerException("Shader libgui:" + name + " not initialised!");
 		}
@@ -27,7 +26,7 @@ public final class LibGuiShaders {
 		return program;
 	}
 
-	public static ShaderProgram getTiledRectangle() {
+	public static ShaderInstance getTiledRectangle() {
 		return assertPresent(tiledRectangle, "tiled_rectangle");
 	}
 }

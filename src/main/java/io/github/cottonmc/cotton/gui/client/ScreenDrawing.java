@@ -1,20 +1,20 @@
 package io.github.cottonmc.cotton.gui.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.util.Identifier;
-
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -35,7 +35,7 @@ public class ScreenDrawing {
 	 * @param texture the Identifier for the texture
 	 * @param color   a color to tint the texture. This can be transparent! Use 0xFF_FFFFFF if you don't want a color tint
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Identifier texture, int color) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, ResourceLocation texture, int color) {
 		texturedRect(context, x, y, width, height, texture, 0, 0, 1, 1, color, 1.0f);
 	}
 
@@ -52,7 +52,7 @@ public class ScreenDrawing {
 	 * @param opacity opacity of the drawn texture. (0f is fully opaque and 1f is fully visible)
 	 * @since 2.0.0
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Identifier texture, int color, float opacity) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, ResourceLocation texture, int color, float opacity) {
 		texturedRect(context, x, y, width, height, texture, 0, 0, 1, 1, color, opacity);
 	}
 
@@ -71,7 +71,7 @@ public class ScreenDrawing {
 	 * @param v2      the bottom edge of the texture
 	 * @param color   a color to tint the texture. This can be transparent! Use 0xFF_FFFFFF if you don't want a color tint
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Identifier texture, float u1, float v1, float u2, float v2, int color) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, ResourceLocation texture, float u1, float v1, float u2, float v2, int color) {
 		texturedRect(context, x, y, width, height, texture, u1, v1, u2, v2, color, 1.0f);
 	}
 
@@ -87,7 +87,7 @@ public class ScreenDrawing {
 	 * @param color   a color to tint the texture. This can be transparent! Use 0xFF_FFFFFF if you don't want a color tint
 	 * @since 3.0.0
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Texture texture, int color) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, Texture texture, int color) {
 		texturedRect(context, x, y, width, height, texture, color, 1.0f);
 	}
 
@@ -104,7 +104,7 @@ public class ScreenDrawing {
 	 * @param opacity opacity of the drawn texture. (0f is fully opaque and 1f is fully visible)
 	 * @since 3.0.0
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Texture texture, int color, float opacity) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, Texture texture, int color, float opacity) {
 		texturedRect(context, x, y, width, height, texture.image(), texture.u1(), texture.v1(), texture.u2(), texture.v2(), color, opacity);
 	}
 
@@ -125,26 +125,26 @@ public class ScreenDrawing {
 	 * @param opacity opacity of the drawn texture. (0f is fully opaque and 1f is fully visible)
 	 * @since 2.0.0
 	 */
-	public static void texturedRect(DrawContext context, int x, int y, int width, int height, Identifier texture, float u1, float v1, float u2, float v2, int color, float opacity) {
+	public static void texturedRect(GuiGraphics context, int x, int y, int width, int height, ResourceLocation texture, float u1, float v1, float u2, float v2, int color, float opacity) {
 		if (width <= 0) width = 1;
 		if (height <= 0) height = 1;
 
 		float r = (color >> 16 & 255) / 255.0F;
 		float g = (color >> 8 & 255) / 255.0F;
 		float b = (color & 255) / 255.0F;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder buffer = tessellator.getBuffer();
-		Matrix4f model = context.getMatrices().peek().getPositionMatrix();
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder buffer = tessellator.getBuilder();
+		Matrix4f model = context.pose().last().pose();
 		RenderSystem.enableBlend();
 		RenderSystem.setShaderTexture(0, texture);
 		RenderSystem.setShaderColor(r, g, b, opacity);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		buffer.vertex(model, x,         y + height, 0).texture(u1, v2).next();
-		buffer.vertex(model, x + width, y + height, 0).texture(u2, v2).next();
-		buffer.vertex(model, x + width, y,          0).texture(u2, v1).next();
-		buffer.vertex(model, x,         y,          0).texture(u1, v1).next();
-		BufferRenderer.drawWithGlobalProgram(buffer.end());
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		buffer.vertex(model, x,         y + height, 0).uv(u1, v2).endVertex();
+		buffer.vertex(model, x + width, y + height, 0).uv(u2, v2).endVertex();
+		buffer.vertex(model, x + width, y,          0).uv(u2, v1).endVertex();
+		buffer.vertex(model, x,         y,          0).uv(u1, v1).endVertex();
+		BufferUploader.drawWithShader(buffer.end());
 		RenderSystem.disableBlend();
 	}
 
@@ -163,7 +163,7 @@ public class ScreenDrawing {
 	 * @param textureY the y offset into the texture
 	 * @param color    a color to tint the texture. This can be transparent! Use 0xFF_FFFFFF if you don't want a color tint
 	 */
-	public static void texturedGuiRect(DrawContext context, int x, int y, int width, int height, Identifier texture, int textureX, int textureY, int color) {
+	public static void texturedGuiRect(GuiGraphics context, int x, int y, int width, int height, ResourceLocation texture, int textureX, int textureY, int color) {
 		float px = 1/256f;
 		texturedRect(context, x, y, width, height, texture, textureX*px, textureY*px, (textureX+width)*px, (textureY+height)*px, color);
 	}
@@ -181,14 +181,14 @@ public class ScreenDrawing {
 	 * @param texture the Identifier for the texture
 	 * @param color   a color to tint the texture. This can be transparent! Use 0xFF_FFFFFF if you don't want a color tint
 	 */
-	public static void texturedGuiRect(DrawContext context, int left, int top, int width, int height, Identifier texture, int color) {
+	public static void texturedGuiRect(GuiGraphics context, int left, int top, int width, int height, ResourceLocation texture, int color) {
 		texturedGuiRect(context, left, top, width, height, texture, 0, 0, color);
 	}
 
 	/**
 	 * Draws an untextured rectangle of the specified RGB color.
 	 */
-	public static void coloredRect(DrawContext context, int left, int top, int width, int height, int color) {
+	public static void coloredRect(GuiGraphics context, int left, int top, int width, int height, int color) {
 		if (width <= 0) width = 1;
 		if (height <= 0) height = 1;
 
@@ -204,7 +204,7 @@ public class ScreenDrawing {
 	 * @param width   the width of the panel
 	 * @param height  the height of the panel
 	 */
-	public static void drawGuiPanel(DrawContext context, int x, int y, int width, int height) {
+	public static void drawGuiPanel(GuiGraphics context, int x, int y, int width, int height) {
 		if (LibGui.isDarkMode()) drawGuiPanel(context, x, y, width, height, 0xFF0B0B0B, 0xFF2F2F2F, 0xFF414141, 0xFF000000);
 		else drawGuiPanel(context, x, y, width, height, 0xFF555555, 0xFFC6C6C6, 0xFFFFFFFF, 0xFF000000);
 	}
@@ -219,7 +219,7 @@ public class ScreenDrawing {
 	 * @param height     the height of the panel
 	 * @param panelColor the panel ARGB color
 	 */
-	public static void drawGuiPanel(DrawContext context, int x, int y, int width, int height, int panelColor) {
+	public static void drawGuiPanel(GuiGraphics context, int x, int y, int width, int height, int panelColor) {
 		int shadowColor = multiplyColor(panelColor, 0.50f);
 		int hilightColor = multiplyColor(panelColor, 1.25f);
 
@@ -239,7 +239,7 @@ public class ScreenDrawing {
 	 * @param hilight the top/left hilight ARGB color
 	 * @param outline the outline ARGB color
 	 */
-	public static void drawGuiPanel(DrawContext context, int x, int y, int width, int height, int shadow, int panel, int hilight, int outline) {
+	public static void drawGuiPanel(GuiGraphics context, int x, int y, int width, int height, int shadow, int panel, int hilight, int outline) {
 		coloredRect(context, x + 3,         y + 3,          width - 6, height - 6, panel); //Main panel area
 
 		coloredRect(context, x + 2,         y + 1,          width - 4, 2,          hilight); //Top hilight
@@ -264,14 +264,14 @@ public class ScreenDrawing {
 	/**
 	 * Draws a default-sized recessed itemslot panel
 	 */
-	public static void drawBeveledPanel(DrawContext context, int x, int y) {
+	public static void drawBeveledPanel(GuiGraphics context, int x, int y) {
 		drawBeveledPanel(context, x, y, 18, 18, 0xFF373737, 0xFF8b8b8b, 0xFFFFFFFF);
 	}
 
 	/**
 	 * Draws a default-color recessed itemslot panel of variable size
 	 */
-	public static void drawBeveledPanel(DrawContext context, int x, int y, int width, int height) {
+	public static void drawBeveledPanel(GuiGraphics context, int x, int y, int width, int height) {
 		drawBeveledPanel(context, x, y, width, height, 0xFF373737, 0xFF8b8b8b, 0xFFFFFFFF);
 	}
 
@@ -287,7 +287,7 @@ public class ScreenDrawing {
 	 * @param panel       color of the panel area
 	 * @param bottomright color of the bottom/right bevel
 	 */
-	public static void drawBeveledPanel(DrawContext context, int x, int y, int width, int height, int topleft, int panel, int bottomright) {
+	public static void drawBeveledPanel(GuiGraphics context, int x, int y, int width, int height, int topleft, int panel, int bottomright) {
 		coloredRect(context, x,             y,              width,     height,     panel); //Center panel
 		coloredRect(context, x,             y,              width - 1, 1,          topleft); //Top shadow
 		coloredRect(context, x,             y + 1,          1,         height - 2, topleft); //Left shadow
@@ -306,23 +306,23 @@ public class ScreenDrawing {
 	 * @param width   the width of the string, used for aligning
 	 * @param color   the text color
 	 */
-	public static void drawString(DrawContext context, String s, HorizontalAlignment align, int x, int y, int width, int color) {
-		var textRenderer = MinecraftClient.getInstance().textRenderer;
+	public static void drawString(GuiGraphics context, String s, HorizontalAlignment align, int x, int y, int width, int color) {
+		var textRenderer = Minecraft.getInstance().font;
 		switch (align) {
 			case LEFT -> {
-				context.drawText(textRenderer, s, x, y, color, false);
+				context.drawString(textRenderer, s, x, y, color, false);
 			}
 
 			case CENTER -> {
-				int wid = textRenderer.getWidth(s);
+				int wid = textRenderer.width(s);
 				int l = (width / 2) - (wid / 2);
-				context.drawText(textRenderer, s, x + l, y, color, false);
+				context.drawString(textRenderer, s, x + l, y, color, false);
 			}
 
 			case RIGHT -> {
-				int wid = textRenderer.getWidth(s);
+				int wid = textRenderer.width(s);
 				int l = width - wid;
-				context.drawText(textRenderer, s, x + l, y, color, false);
+				context.drawString(textRenderer, s, x + l, y, color, false);
 			}
 		}
 	}
@@ -339,23 +339,23 @@ public class ScreenDrawing {
 	 * @param color   the text color
 	 * @since 1.9.0
 	 */
-	public static void drawString(DrawContext context, OrderedText text, HorizontalAlignment align, int x, int y, int width, int color) {
-		var textRenderer = MinecraftClient.getInstance().textRenderer;
+	public static void drawString(GuiGraphics context, FormattedCharSequence text, HorizontalAlignment align, int x, int y, int width, int color) {
+		var textRenderer = Minecraft.getInstance().font;
 		switch (align) {
 			case LEFT -> {
-				context.drawText(textRenderer, text, x, y, color, false);
+				context.drawString(textRenderer, text, x, y, color, false);
 			}
 
 			case CENTER -> {
-				int wid = textRenderer.getWidth(text);
+				int wid = textRenderer.width(text);
 				int l = (width / 2) - (wid / 2);
-				context.drawText(textRenderer, text, x + l, y, color, false);
+				context.drawString(textRenderer, text, x + l, y, color, false);
 			}
 
 			case RIGHT -> {
-				int wid = textRenderer.getWidth(text);
+				int wid = textRenderer.width(text);
 				int l = width - wid;
-				context.drawText(textRenderer, text, x + l, y, color, false);
+				context.drawString(textRenderer, text, x + l, y, color, false);
 			}
 		}
 	}
@@ -371,23 +371,23 @@ public class ScreenDrawing {
 	 * @param width   the width of the string, used for aligning
 	 * @param color   the text color
 	 */
-	public static void drawStringWithShadow(DrawContext context, String s, HorizontalAlignment align, int x, int y, int width, int color) {
-		var textRenderer = MinecraftClient.getInstance().textRenderer;
+	public static void drawStringWithShadow(GuiGraphics context, String s, HorizontalAlignment align, int x, int y, int width, int color) {
+		var textRenderer = Minecraft.getInstance().font;
 		switch (align) {
 			case LEFT -> {
-				context.drawText(textRenderer, s, x, y, color, true);
+				context.drawString(textRenderer, s, x, y, color, true);
 			}
 
 			case CENTER -> {
-				int wid = textRenderer.getWidth(s);
+				int wid = textRenderer.width(s);
 				int l = (width / 2) - (wid / 2);
-				context.drawText(textRenderer, s, x + l, y, color, true);
+				context.drawString(textRenderer, s, x + l, y, color, true);
 			}
 
 			case RIGHT -> {
-				int wid = textRenderer.getWidth(s);
+				int wid = textRenderer.width(s);
 				int l = width - wid;
-				context.drawText(textRenderer, s, x + l, y, color, true);
+				context.drawString(textRenderer, s, x + l, y, color, true);
 			}
 		}
 	}
@@ -403,23 +403,23 @@ public class ScreenDrawing {
 	 * @param width   the width of the string, used for aligning
 	 * @param color   the text color
 	 */
-	public static void drawStringWithShadow(DrawContext context, OrderedText text, HorizontalAlignment align, int x, int y, int width, int color) {
-		var textRenderer = MinecraftClient.getInstance().textRenderer;
+	public static void drawStringWithShadow(GuiGraphics context, FormattedCharSequence text, HorizontalAlignment align, int x, int y, int width, int color) {
+		var textRenderer = Minecraft.getInstance().font;
 		switch (align) {
 			case LEFT -> {
-				context.drawText(textRenderer, text, x, y, color, true);
+				context.drawString(textRenderer, text, x, y, color, true);
 			}
 
 			case CENTER -> {
-				int wid = textRenderer.getWidth(text);
+				int wid = textRenderer.width(text);
 				int l = (width / 2) - (wid / 2);
-				context.drawText(textRenderer, text, x + l, y, color, true);
+				context.drawString(textRenderer, text, x + l, y, color, true);
 			}
 
 			case RIGHT -> {
-				int wid = textRenderer.getWidth(text);
+				int wid = textRenderer.width(text);
 				int l = width - wid;
-				context.drawText(textRenderer, text, x + l, y, color, true);
+				context.drawString(textRenderer, text, x + l, y, color, true);
 			}
 		}
 	}
@@ -433,8 +433,8 @@ public class ScreenDrawing {
 	 * @param y       the Y position
 	 * @param color   the text color
 	 */
-	public static void drawString(DrawContext context, String s, int x, int y, int color) {
-		context.drawText(MinecraftClient.getInstance().textRenderer, s, x, y, color, false);
+	public static void drawString(GuiGraphics context, String s, int x, int y, int color) {
+		context.drawString(Minecraft.getInstance().font, s, x, y, color, false);
 	}
 
 	/**
@@ -446,8 +446,8 @@ public class ScreenDrawing {
 	 * @param y       the Y position
 	 * @param color   the text color
 	 */
-	public static void drawString(DrawContext context, OrderedText text, int x, int y, int color) {
-		context.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
+	public static void drawString(GuiGraphics context, FormattedCharSequence text, int x, int y, int color) {
+		context.drawString(Minecraft.getInstance().font, text, x, y, color, false);
 	}
 
 	/**
@@ -462,8 +462,8 @@ public class ScreenDrawing {
 	 * @param y         the Y position
 	 * @since 4.0.0
 	 */
-	public static void drawTextHover(DrawContext context, @Nullable Style textStyle, int x, int y) {
-		context.drawHoverEvent(MinecraftClient.getInstance().textRenderer, textStyle, x, y);
+	public static void drawTextHover(GuiGraphics context, @Nullable Style textStyle, int x, int y) {
+		context.renderComponentHoverEffect(Minecraft.getInstance().font, textStyle, x, y);
 	}
 
 	public static int colorAtOpacity(int opaque, float opacity) {

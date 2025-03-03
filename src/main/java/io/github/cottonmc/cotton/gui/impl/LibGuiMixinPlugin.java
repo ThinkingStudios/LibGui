@@ -1,11 +1,10 @@
 package io.github.cottonmc.cotton.gui.impl;
 
-import net.fabricmc.loader.api.FabricLoader;
-
 import com.google.common.base.Suppliers;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.thinkingstudio.libgui_foxified.loader.FoxifiedLoader;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
 
 public final class LibGuiMixinPlugin implements IMixinConfigPlugin {
 	private static final Supplier<Boolean> IS_DEVELOPMENT =
-			Suppliers.memoize(() -> FabricLoader.getInstance().isDevelopmentEnvironment());
+			Suppliers.memoize(FoxifiedLoader::isDevelopmentEnvironment);
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {

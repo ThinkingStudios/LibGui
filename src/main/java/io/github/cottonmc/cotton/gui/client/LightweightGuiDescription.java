@@ -1,7 +1,5 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.minecraft.screen.PropertyDelegate;
-
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.ValidatedSlot;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
@@ -11,6 +9,7 @@ import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.Vec2i;
+import net.minecraft.world.inventory.ContainerData;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LightweightGuiDescription implements GuiDescription {
 	protected WPanel rootPanel = new WGridPanel().setInsets(Insets.ROOT_PANEL);
-	protected PropertyDelegate propertyDelegate;
+	protected ContainerData propertyDelegate;
 	protected WWidget focus;
 
 	protected int titleColor = WLabel.DEFAULT_TEXT_COLOR;
@@ -72,12 +71,12 @@ public class LightweightGuiDescription implements GuiDescription {
 
 	@Override
 	@Nullable
-	public PropertyDelegate getPropertyDelegate() {
+	public ContainerData getPropertyDelegate() {
 		return propertyDelegate;
 	}
 
 	@Override
-	public GuiDescription setPropertyDelegate(PropertyDelegate delegate) {
+	public GuiDescription setPropertyDelegate(ContainerData delegate) {
 		this.propertyDelegate = delegate;
 		return this;
 	}

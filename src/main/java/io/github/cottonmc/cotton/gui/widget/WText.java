@@ -1,20 +1,20 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.VerticalAlignment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -26,20 +26,20 @@ import java.util.Objects;
  * @since 1.8.0
  */
 public class WText extends WWidget {
-	protected Text text;
+	protected Component text;
 	protected int color;
 	protected int darkmodeColor;
 	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 	protected VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-	@Environment(EnvType.CLIENT)
-	private List<OrderedText> wrappedLines;
+	@OnlyIn(Dist.CLIENT)
+	private List<FormattedCharSequence> wrappedLines;
 	private boolean wrappingScheduled = false;
 
-	public WText(Text text) {
+	public WText(Component text) {
 		this(text, WLabel.DEFAULT_TEXT_COLOR);
 	}
 
-	public WText(Text text, int color) {
+	public WText(Component text, int color) {
 		this.text = Objects.requireNonNull(text, "text must not be null");
 		this.color = color;
 		this.darkmodeColor = (color == WLabel.DEFAULT_TEXT_COLOR) ? WLabel.DEFAULT_DARKMODE_TEXT_COLOR : color;
@@ -56,10 +56,10 @@ public class WText extends WWidget {
 		return true;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	private void wrapLines() {
-		TextRenderer font = MinecraftClient.getInstance().textRenderer;
-		wrappedLines = font.wrapLines(text, width);
+		Font font = Minecraft.getInstance().font;
+		wrappedLines = font.split(text, width);
 	}
 
 	/**
@@ -69,55 +69,55 @@ public class WText extends WWidget {
 	 * @param y the Y coordinate in widget space
 	 * @return the text style at the position, or null if not found
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public Style getTextStyleAt(int x, int y) {
-		TextRenderer font = MinecraftClient.getInstance().textRenderer;
-		int lineIndex = y / font.fontHeight;
+		Font font = Minecraft.getInstance().font;
+		int lineIndex = y / font.lineHeight;
 
 		if (lineIndex >= 0 && lineIndex < wrappedLines.size()) {
-			OrderedText line = wrappedLines.get(lineIndex);
-			return font.getTextHandler().getStyleAt(line, x);
+			FormattedCharSequence line = wrappedLines.get(lineIndex);
+			return font.getSplitter().componentStyleAtWidth(line, x);
 		}
 
 		return null;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		if (wrappedLines == null || wrappingScheduled) {
 			wrapLines();
 			wrappingScheduled = false;
 		}
 
-		TextRenderer font = MinecraftClient.getInstance().textRenderer;
+		Font font = Minecraft.getInstance().font;
 
 		int yOffset = switch (verticalAlignment) {
-			case CENTER -> height / 2 - font.fontHeight * wrappedLines.size() / 2;
-			case BOTTOM -> height - font.fontHeight * wrappedLines.size();
+			case CENTER -> height / 2 - font.lineHeight * wrappedLines.size() / 2;
+			case BOTTOM -> height - font.lineHeight * wrappedLines.size();
 			case TOP -> 0;
 		};
 
 		for (int i = 0; i < wrappedLines.size(); i++) {
-			OrderedText line = wrappedLines.get(i);
+			FormattedCharSequence line = wrappedLines.get(i);
 			int c = shouldRenderInDarkMode() ? darkmodeColor : color;
 
-			ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.fontHeight, width, c);
+			ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.lineHeight, width, c);
 		}
 
 		Style hoveredTextStyle = getTextStyleAt(mouseX, mouseY);
 		ScreenDrawing.drawTextHover(context, hoveredTextStyle, x + mouseX, y + mouseY);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
 	public InputResult onClick(int x, int y, int button) {
 		if (button != 0) return InputResult.IGNORED; // only left clicks
 
 		Style hoveredTextStyle = getTextStyleAt(x, y);
 		if (hoveredTextStyle != null) {
-			boolean processed = MinecraftClient.getInstance().currentScreen.handleTextClick(hoveredTextStyle);
+			boolean processed = Minecraft.getInstance().screen.handleComponentClicked(hoveredTextStyle);
 			return InputResult.of(processed);
 		}
 
@@ -129,7 +129,7 @@ public class WText extends WWidget {
 	 *
 	 * @return the text
 	 */
-	public Text getText() {
+	public Component getText() {
 		return text;
 	}
 
@@ -139,7 +139,7 @@ public class WText extends WWidget {
 	 * @param text the new text
 	 * @return this label
 	 */
-	public WText setText(Text text) {
+	public WText setText(Component text) {
 		Objects.requireNonNull(text, "text is null");
 		this.text = text;
 		wrappingScheduled = true;
@@ -255,9 +255,9 @@ public class WText extends WWidget {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, text);
+	public void addNarrations(NarrationElementOutput builder) {
+		builder.add(NarratedElementType.TITLE, text);
 	}
 }

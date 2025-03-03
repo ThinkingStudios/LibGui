@@ -1,13 +1,12 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.gui.DrawContext;
-
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
+import net.minecraft.client.gui.GuiGraphics;
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * Similar to the JScrollPane in Swing, this widget represents a scrollable widget.
@@ -90,9 +89,9 @@ public class WScrollPanel extends WClippedPanel {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		if (verticalScrollBar.getValue() != lastVerticalScroll || horizontalScrollBar.getValue() != lastHorizontalScroll) {
 			layout();
 			lastHorizontalScroll = horizontalScrollBar.getValue();

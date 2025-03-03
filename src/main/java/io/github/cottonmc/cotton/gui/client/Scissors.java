@@ -1,9 +1,9 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayDeque;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  *
  * @since 2.0.0
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class Scissors {
 	private static final ArrayDeque<Frame> STACK = new ArrayDeque<>();
 
@@ -53,11 +53,11 @@ public final class Scissors {
 	}
 
 	static void refreshScissors() {
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 
 		if (STACK.isEmpty()) {
 			// Just use the full window framebuffer as a scissor
-			GL11.glScissor(0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
+			GL11.glScissor(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight());
 			return;
 		}
 
@@ -81,8 +81,8 @@ public final class Scissors {
 			}
 		}
 
-		int windowHeight = mc.getWindow().getFramebufferHeight();
-		double scale = mc.getWindow().getScaleFactor();
+		int windowHeight = mc.getWindow().getHeight();
+		double scale = mc.getWindow().getGuiScale();
 		int scaledWidth = (int) (width * scale);
 		int scaledHeight = (int) (height * scale);
 

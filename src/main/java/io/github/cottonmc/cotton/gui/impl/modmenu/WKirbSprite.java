@@ -1,18 +1,17 @@
 package io.github.cottonmc.cotton.gui.impl.modmenu;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 
 public class WKirbSprite extends WWidget {
-	private static final Identifier KIRB = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/kirb.png");
+	private static final ResourceLocation KIRB = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/kirb.png");
 
 	private static final float PX = 1f/416f;
 	private static final float KIRB_WIDTH = 32*PX;
@@ -52,9 +51,9 @@ public class WKirbSprite extends WWidget {
 		return 32;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		long now = System.nanoTime() / 1_000_000L;
 
 		if (pendingFrames.isEmpty()) {

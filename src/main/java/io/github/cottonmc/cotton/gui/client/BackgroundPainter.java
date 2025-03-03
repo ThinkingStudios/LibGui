@@ -1,7 +1,7 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
@@ -26,7 +26,7 @@ public interface BackgroundPainter {
 	 * @param top     The absolute position of the top of the panel, in gui-screen coordinates
 	 * @param panel   The panel being painted
 	 */
-	public void paintBackground(DrawContext context, int left, int top, WWidget panel);
+	public void paintBackground(GuiGraphics context, int left, int top, WWidget panel);
 
 	/**
 	 * The {@code VANILLA} background painter draws a vanilla-like GUI panel using nine-patch textures.
@@ -40,8 +40,8 @@ public interface BackgroundPainter {
 	 * @since 1.5.0
 	 */
 	public static BackgroundPainter VANILLA = createLightDarkVariants(
-			createNinePatch(new Identifier(LibGuiCommon.MOD_ID, "textures/widget/panel_light.png")),
-			createNinePatch(new Identifier(LibGuiCommon.MOD_ID, "textures/widget/panel_dark.png"))
+			createNinePatch(new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/panel_light.png")),
+			createNinePatch(new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/panel_dark.png"))
 	);
 
 	/**
@@ -87,7 +87,7 @@ public interface BackgroundPainter {
 	 *
 	 * @param panelColor the panel background color
 	 * @return a colorful gui panel painter
-	 * @see ScreenDrawing#drawGuiPanel(DrawContext, int, int, int, int, int)
+	 * @see ScreenDrawing#drawGuiPanel(GuiGraphics, int, int, int, int, int)
 	 */
 	public static BackgroundPainter createColorful(int panelColor) {
 		return (context, left, top, panel) -> {
@@ -121,7 +121,7 @@ public interface BackgroundPainter {
 	 * @since 1.5.0
 	 * @see NinePatchBackgroundPainter
 	 */
-	public static NinePatchBackgroundPainter createNinePatch(Identifier texture) {
+	public static NinePatchBackgroundPainter createNinePatch(ResourceLocation texture) {
 		return createNinePatch(new Texture(texture), builder -> builder.cornerSize(4).cornerUv(0.25f));
 	}
 
@@ -136,8 +136,8 @@ public interface BackgroundPainter {
 	 * @see NinePatch.Builder
 	 * @see NinePatchBackgroundPainter
 	 */
-	public static NinePatchBackgroundPainter createNinePatch(Texture texture, Consumer<NinePatch.Builder<Identifier>> configurator) {
-		TextureRegion<Identifier> region = new TextureRegion<>(texture.image(), texture.u1(), texture.v1(), texture.u2(), texture.v2());
+	public static NinePatchBackgroundPainter createNinePatch(Texture texture, Consumer<NinePatch.Builder<ResourceLocation>> configurator) {
+		TextureRegion<ResourceLocation> region = new TextureRegion<>(texture.image(), texture.u1(), texture.v1(), texture.u2(), texture.v2());
 		var builder = NinePatch.builder(region);
 		configurator.accept(builder);
 		return new NinePatchBackgroundPainter(builder.build());

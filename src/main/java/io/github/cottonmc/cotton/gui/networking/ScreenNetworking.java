@@ -1,25 +1,24 @@
 package io.github.cottonmc.cotton.gui.networking;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
 
 import java.util.function.Consumer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * {@code ScreenNetworking} handles screen-related network messages sent between the server and the client.
  *
  * <h2>Registering a message receiver</h2>
- * {@linkplain MessageReceiver Message receivers} can be registered by calling {@link #receive(Identifier, MessageReceiver)}
+ * {@linkplain MessageReceiver Message receivers} can be registered by calling {@link #receive(ResourceLocation, MessageReceiver)}
  * on a {@code ScreenNetworking} for the receiving side. The {@code message} ID is a unique ID that matches between
  * the sender and the receiver.
  *
  * <p>Message receivers should be registered in the constructor of a {@link SyncedGuiDescription}.
  *
  * <h2>Sending messages</h2>
- * Messages can be sent by calling {@link #send(Identifier, Consumer)} on a {@code ScreenNetworking}
+ * Messages can be sent by calling {@link #send(ResourceLocation, Consumer)} on a {@code ScreenNetworking}
  * for the sending side. The {@code message} ID should match up with a receiver registered on the <i>opposite</i>
  * side.
  *
@@ -67,7 +66,7 @@ public interface ScreenNetworking {
 	 * @throws IllegalStateException if the message has already been registered
 	 * @throws NullPointerException  if either parameter is null
 	 */
-	void receive(Identifier message, MessageReceiver receiver);
+	void receive(ResourceLocation message, MessageReceiver receiver);
 
 	/**
 	 * Sends a screen message to the other side of the connection.
@@ -77,7 +76,7 @@ public interface ScreenNetworking {
 	 *                should not read the buffer
 	 * @throws NullPointerException if either parameter is null
 	 */
-	void send(Identifier message, Consumer<PacketByteBuf> writer);
+	void send(ResourceLocation message, Consumer<FriendlyByteBuf> writer);
 
 	/**
 	 * A handler for received screen messages.
@@ -91,6 +90,6 @@ public interface ScreenNetworking {
 		 *
 		 * @param buf the message packet buffer
 		 */
-		void onMessage(PacketByteBuf buf);
+		void onMessage(FriendlyByteBuf buf);
 	}
 }

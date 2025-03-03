@@ -14,7 +14,7 @@
 	},
 
 	"license": "MIT",
-	"icon": "assets/libgui/icon.png",
+	"icon": "icon.png",
 
 	"environment": "*",
 	"entrypoints": {

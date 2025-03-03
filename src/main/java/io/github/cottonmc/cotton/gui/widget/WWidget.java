@@ -1,18 +1,17 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.LibGui;
 import io.github.cottonmc.cotton.gui.impl.VisualLogger;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.ObservableProperty;
 import io.github.cottonmc.cotton.gui.widget.focus.FocusModel;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -163,7 +162,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseDown(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -179,7 +178,7 @@ public class WWidget {
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 * @since 1.5.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseDrag(int x, int y, int button, double deltaX, double deltaY) {
 		return InputResult.IGNORED;
 	}
@@ -191,7 +190,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseUp(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -204,7 +203,7 @@ public class WWidget {
 	 * @param button The mouse button that was used. Button numbering is consistent with LWJGL Mouse (0=left, 1=right, 2=mousewheel click)
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onClick(int x, int y, int button) {
 		return InputResult.IGNORED;
 	}
@@ -217,7 +216,7 @@ public class WWidget {
 	 * @param amount The scrolled amount. Positive values are up and negative values are down.
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseScroll(int x, int y, double amount) {
 		return InputResult.IGNORED;
 	}
@@ -230,7 +229,7 @@ public class WWidget {
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 * @since 1.5.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onMouseMove(int x, int y) {
 		return InputResult.IGNORED;
 	}
@@ -241,7 +240,7 @@ public class WWidget {
 	 * @param ch the character typed
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onCharTyped(char ch) {
 		return InputResult.IGNORED;
 	}
@@ -251,7 +250,7 @@ public class WWidget {
 	 * @param key the GLFW scancode of the key
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onKeyPressed(int ch, int key, int modifiers) {
 		return InputResult.IGNORED;
 	}
@@ -261,7 +260,7 @@ public class WWidget {
 	 * @param key the GLFW scancode of the key
 	 * @return {@link InputResult#PROCESSED} if the event is handled, {@link InputResult#IGNORED} otherwise.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public InputResult onKeyReleased(int ch, int key, int modifiers) {
 		return InputResult.IGNORED;
 	}
@@ -326,8 +325,8 @@ public class WWidget {
 	 * @param mouseY  the X coordinate of the cursor
 	 * @since 2.0.0
 	 */
-	@Environment(EnvType.CLIENT)
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	@OnlyIn(Dist.CLIENT)
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 	}
 
 	/**
@@ -353,20 +352,20 @@ public class WWidget {
 	 * @param tX      the X coordinate of the tooltip
 	 * @param tY      the Y coordinate of the tooltip
 	 */
-	@Environment(EnvType.CLIENT)
-	public void renderTooltip(DrawContext context, int x, int y, int tX, int tY) {
+	@OnlyIn(Dist.CLIENT)
+	public void renderTooltip(GuiGraphics context, int x, int y, int tX, int tY) {
 		TooltipBuilder builder = new TooltipBuilder();
 		addTooltip(builder);
 
 		if (builder.size() == 0) return;
 
-		var client = MinecraftClient.getInstance();
-		context.drawTooltip(client.textRenderer, builder.lines, HoveredTooltipPositioner.INSTANCE, tX + x, tY + y);
+		var client = Minecraft.getInstance();
+		context.renderTooltip(client.font, builder.lines, DefaultTooltipPositioner.INSTANCE, tX + x, tY + y);
 	}
 
 	/**
 	 * Creates component peers and initializes animation data for this Widget and all its children.
-	 * The host {@linkplain net.minecraft.screen.ScreenHandler screen handler} must clear any heavyweight peers
+	 * The host {@linkplain net.minecraft.world.inventory.AbstractContainerMenu screen handler} must clear any heavyweight peers
 	 * from its records before this method is called.
 	 *
 	 * <p>This method must be called on the root panel of any screen once the widgets have been initialized.
@@ -413,7 +412,7 @@ public class WWidget {
 	 *
 	 * @param tooltip the builder to add tooltip lines to
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addTooltip(TooltipBuilder tooltip) {
 	}
 
@@ -427,7 +426,7 @@ public class WWidget {
 	/**
 	 * Executes a client-side tick for this widget.
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void tick() {}
 
 	/**
@@ -476,7 +475,7 @@ public class WWidget {
 	 *
 	 * @since 3.0.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public void addPainters() {
 	}
 
@@ -499,7 +498,7 @@ public class WWidget {
 	 *
 	 * <p>Hovering is used by LibGui itself mostly for narration support.
 	 * For rendering, it might be preferable that you check the mouse coordinates in
-	 * {@link #paint(DrawContext, int, int, int, int) paint()} directly.
+	 * {@link #paint(GuiGraphics, int, int, int, int) paint()} directly.
 	 * That lets you react to different parts of the widget being hovered over.
 	 *
 	 * @return the {@code hovered} property
@@ -537,7 +536,7 @@ public class WWidget {
 	/**
 	 * {@return whether this widget can be narrated}
 	 *
-	 * @see #addNarrations(NarrationMessageBuilder)
+	 * @see #addNarrations(NarrationElementOutput)
 	 * @since 4.2.0
 	 */
 	public boolean isNarratable() {
@@ -554,8 +553,8 @@ public class WWidget {
 	 * @param builder the narration builder, cannot be null
 	 * @since 4.2.0
 	 */
-	@Environment(EnvType.CLIENT)
-	public void addNarrations(NarrationMessageBuilder builder) {
+	@OnlyIn(Dist.CLIENT)
+	public void addNarrations(NarrationElementOutput builder) {
 	}
 
 	/**
@@ -567,7 +566,7 @@ public class WWidget {
 	 * @return whether the key is an activation key
 	 * @since 2.0.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public static boolean isActivationKey(int ch) {
 		return ch == GLFW.GLFW_KEY_ENTER || ch == GLFW.GLFW_KEY_KP_ENTER || ch == GLFW.GLFW_KEY_SPACE;
 	}
@@ -584,7 +583,7 @@ public class WWidget {
 	 * @return {@code true} if this widget should be rendered in dark mode, {@code false} otherwise
 	 * @since 7.1.0
 	 */
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public boolean shouldRenderInDarkMode() {
 		var globalDarkMode = LibGui.isDarkMode();
 

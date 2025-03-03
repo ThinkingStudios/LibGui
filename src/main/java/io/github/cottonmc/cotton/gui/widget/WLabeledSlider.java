@@ -1,18 +1,16 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -25,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @see WAbstractSlider for more information about listeners
  */
 public class WLabeledSlider extends WAbstractSlider {
-	@Nullable private Text label = null;
+	@Nullable private Component label = null;
 	@Nullable private LabelUpdater labelUpdater = null;
 	private HorizontalAlignment labelAlignment = HorizontalAlignment.CENTER;
 
@@ -58,7 +56,7 @@ public class WLabeledSlider extends WAbstractSlider {
 	 * @param axis the slider axis
 	 * @param label the slider label (can be null)
 	 */
-	public WLabeledSlider(int min, int max, Axis axis, @Nullable Text label) {
+	public WLabeledSlider(int min, int max, Axis axis, @Nullable Component label) {
 		this(min, max, axis);
 		this.label = label;
 	}
@@ -70,7 +68,7 @@ public class WLabeledSlider extends WAbstractSlider {
 	 * @param max the maximum value
 	 * @param label the slider label (can be null)
 	 */
-	public WLabeledSlider(int min, int max, @Nullable Text label) {
+	public WLabeledSlider(int min, int max, @Nullable Component label) {
 		this(min, max);
 		this.label = label;
 	}
@@ -90,7 +88,7 @@ public class WLabeledSlider extends WAbstractSlider {
 	 * @return the label
 	 */
 	@Nullable
-	public Text getLabel() {
+	public Component getLabel() {
 		return label;
 	}
 
@@ -99,7 +97,7 @@ public class WLabeledSlider extends WAbstractSlider {
 	 *
 	 * @param label the new label
 	 */
-	public void setLabel(@Nullable Text label) {
+	public void setLabel(@Nullable Component label) {
 		this.label = label;
 	}
 
@@ -158,9 +156,9 @@ public class WLabeledSlider extends WAbstractSlider {
 		return x >= 0 && x <= width && y >= 0 && y <= height;
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
+	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
 		int aWidth = axis == Axis.HORIZONTAL ? width : height;
 		int aHeight = axis == Axis.HORIZONTAL ? height : width;
 		int rotMouseX = axis == Axis.HORIZONTAL
@@ -168,12 +166,12 @@ public class WLabeledSlider extends WAbstractSlider {
 				: (direction == Direction.UP ? height - mouseY : mouseY);
 		int rotMouseY = axis == Axis.HORIZONTAL ? mouseY : mouseX;
 
-		var matrices = context.getMatrices();
-		matrices.push();
+		var matrices = context.pose();
+		matrices.pushPose();
 		matrices.translate(x, y, 0);
 		if (axis == Axis.VERTICAL) {
 			matrices.translate(0, height, 0);
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(270));
+			matrices.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(270));
 		}
 		drawButton(context, 0, 0, 0, aWidth);
 
@@ -194,14 +192,14 @@ public class WLabeledSlider extends WAbstractSlider {
 
 		if (label != null) {
 			int color = isMouseInsideBounds(mouseX, mouseY) ? 0xFFFFA0 : 0xE0E0E0;
-			ScreenDrawing.drawStringWithShadow(context, label.asOrderedText(), labelAlignment, 2, aHeight / 2 - 4, aWidth - 4, color);
+			ScreenDrawing.drawStringWithShadow(context, label.getVisualOrderText(), labelAlignment, 2, aHeight / 2 - 4, aWidth - 4, color);
 		}
-		matrices.pop();
+		matrices.popPose();
 	}
 
 	// state = 1: regular, 2: hovered, 0: disabled/dragging
-	@Environment(EnvType.CLIENT)
-	private void drawButton(DrawContext context, int x, int y, int state, int width) {
+	@OnlyIn(Dist.CLIENT)
+	private void drawButton(GuiGraphics context, int x, int y, int state, int width) {
 		float px = 1 / 256f;
 		float buttonLeft = 0 * px;
 		float buttonTop = (46 + (state * 20)) * px;
@@ -211,17 +209,17 @@ public class WLabeledSlider extends WAbstractSlider {
 		float buttonHeight = 20 * px;
 		float buttonEndLeft = (200 - halfWidth) * px;
 
-		Identifier texture = WButton.getTexture(this);
+		ResourceLocation texture = WButton.getTexture(this);
 		ScreenDrawing.texturedRect(context, x, y, halfWidth, 20, texture, buttonLeft, buttonTop, buttonLeft + buttonWidth, buttonTop + buttonHeight, 0xFFFFFFFF);
 		ScreenDrawing.texturedRect(context, x + halfWidth, y, halfWidth, 20, texture, buttonEndLeft, buttonTop, 200 * px, buttonTop + buttonHeight, 0xFFFFFFFF);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationMessageBuilder builder) {
+	public void addNarrations(NarrationElementOutput builder) {
 		if (getLabel() != null) {
-			builder.put(NarrationPart.TITLE, Text.translatable(NarrationMessages.LABELED_SLIDER_TITLE_KEY, getLabel(), value, min, max));
-			builder.put(NarrationPart.USAGE, NarrationMessages.SLIDER_USAGE);
+			builder.add(NarratedElementType.TITLE, Component.translatable(NarrationMessages.LABELED_SLIDER_TITLE_KEY, getLabel(), value, min, max));
+			builder.add(NarratedElementType.USAGE, NarrationMessages.SLIDER_USAGE);
 		} else {
 			super.addNarrations(builder);
 		}
@@ -240,6 +238,6 @@ public class WLabeledSlider extends WAbstractSlider {
 		 * @param value the slider value
 		 * @return the label
 		 */
-		Text updateLabel(int value);
+		Component updateLabel(int value);
 	}
 }

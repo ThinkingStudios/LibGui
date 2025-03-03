@@ -1,9 +1,10 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,9 +15,9 @@ import java.util.List;
  *
  * @since 3.0.0
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class TooltipBuilder {
-	final List<OrderedText> lines = new ArrayList<>();
+	final List<FormattedCharSequence> lines = new ArrayList<>();
 
 	int size() {
 		return lines.size();
@@ -28,9 +29,9 @@ public final class TooltipBuilder {
 	 * @param lines the lines
 	 * @return this builder
 	 */
-	public TooltipBuilder add(Text... lines) {
-		for (Text line : lines) {
-			this.lines.add(line.asOrderedText());
+	public TooltipBuilder add(Component... lines) {
+		for (Component line : lines) {
+			this.lines.add(line.getVisualOrderText());
 		}
 
 		return this;
@@ -42,7 +43,7 @@ public final class TooltipBuilder {
 	 * @param lines the lines
 	 * @return this builder
 	 */
-	public TooltipBuilder add(OrderedText... lines) {
+	public TooltipBuilder add(FormattedCharSequence... lines) {
 		Collections.addAll(this.lines, lines);
 
 		return this;

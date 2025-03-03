@@ -1,13 +1,8 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.Window;
-
 import io.github.cottonmc.cotton.gui.widget.WWidget;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,31 +12,39 @@ import java.util.Set;
 /**
  * Manages widgets that are painted on the in-game HUD.
  */
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public final class CottonHud {
 	private static final Set<WWidget> widgets = new HashSet<>();
 	private static final Map<WWidget, Positioner> positioners = new HashMap<>();
 
+	public static Set<WWidget> getWidgets() {
+		return widgets;
+	}
+
+	public static Map<WWidget, Positioner> getPositioners() {
+		return positioners;
+	}
+
 	static {
-		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
-			Window window = MinecraftClient.getInstance().getWindow();
-			int hudWidth = window.getScaledWidth();
-			int hudHeight = window.getScaledHeight();
-			for (WWidget widget : widgets) {
-				Positioner positioner = positioners.get(widget);
-				if (positioner != null) {
-					positioner.reposition(widget, hudWidth, hudHeight);
-				}
+//		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+//			Window window = Minecraft.getInstance().getWindow();
+//			int hudWidth = window.getGuiScaledWidth();
+//			int hudHeight = window.getGuiScaledHeight();
+//			for (WWidget widget : widgets) {
+//				Positioner positioner = positioners.get(widget);
+//				if (positioner != null) {
+//					positioner.reposition(widget, hudWidth, hudHeight);
+//				}
+//
+//				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
+//			}
+//		});
 
-				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
-			}
-		});
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			for (WWidget widget : widgets) {
-				widget.tick();
-			}
-		});
+//		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+//			for (WWidget widget : widgets) {
+//				widget.tick();
+//			}
+//		});
 	}
 
 	/**
