@@ -1,7 +1,8 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.text.Text;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
@@ -18,23 +19,23 @@ public class WPlayerInvPanel extends WPlainPanel {
 	/**
 	 * A 9 by 3 {@link WItemSlot} that represents the player's inventory.
 	 *
-	 * @see Inventory
+	 * @see PlayerInventory
 	 * @since 8.1.0
 	 */
 	protected final WItemSlot inventory;
 	/**
 	 * A 9 by 1 {@link WItemSlot} that represents the player's hotbar.
 	 *
-	 * @see Inventory
+	 * @see PlayerInventory
 	 * @since 8.1.0
 	 */
 	protected final WItemSlot hotbar;
 	/**
 	 * The label seen above {@link WPlayerInvPanel#inventory}.
 	 *
-	 * <p> In vanilla and {@link WPlayerInvPanel#WPlayerInvPanel(Inventory)}, this label is always 'Inventory'
+	 * <p> In vanilla and {@link WPlayerInvPanel#WPlayerInvPanel(PlayerInventory)}, this label is always 'Inventory'
 	 *
-	 * @see #createInventoryLabel(Inventory)
+	 * @see #createInventoryLabel(PlayerInventory)
 	 * @since 8.1.0
 	 */
 	@Nullable
@@ -45,7 +46,7 @@ public class WPlayerInvPanel extends WPlainPanel {
 	 *
 	 * @param playerInventory the player inventory
 	 */
-	public WPlayerInvPanel(Inventory playerInventory) {
+	public WPlayerInvPanel(PlayerInventory playerInventory) {
 		this(playerInventory, true);
 	}
 
@@ -56,7 +57,7 @@ public class WPlayerInvPanel extends WPlainPanel {
 	 * @param hasLabel        whether there should be an "Inventory" label
 	 * @since 2.0.0
 	 */
-	public WPlayerInvPanel(Inventory playerInventory, boolean hasLabel) {
+	public WPlayerInvPanel(PlayerInventory playerInventory, boolean hasLabel) {
 		this(playerInventory, hasLabel ? createInventoryLabel(playerInventory) : null);
 	}
 
@@ -67,7 +68,7 @@ public class WPlayerInvPanel extends WPlainPanel {
 	 * @param label           the label widget, can be null
 	 * @since 2.0.0
 	 */
-	public WPlayerInvPanel(Inventory playerInventory, @Nullable WWidget label) {
+	public WPlayerInvPanel(PlayerInventory playerInventory, @Nullable WWidget label) {
 		int y = 0;
 
 		this.label = label;
@@ -79,7 +80,7 @@ public class WPlayerInvPanel extends WPlainPanel {
 		inventory = WItemSlot.ofPlayerStorage(playerInventory);
 		hotbar = new WItemSlot(playerInventory, 0, 9, 1, false) {
 			@Override
-			protected Component getNarrationName() {
+			protected Text getNarrationName() {
 				return NarrationMessages.Vanilla.HOTBAR;
 			}
 		};
@@ -99,7 +100,7 @@ public class WPlayerInvPanel extends WPlainPanel {
 	 * @return the created label
 	 * @since 3.1.0
 	 */
-	public static WLabel createInventoryLabel(Inventory playerInventory) {
+	public static WLabel createInventoryLabel(PlayerInventory playerInventory) {
 		WLabel label = new WLabel(playerInventory.getDisplayName());
 		label.setSize(9*18, 11);
 		return label;

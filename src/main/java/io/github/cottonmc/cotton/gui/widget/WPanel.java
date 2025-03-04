@@ -1,6 +1,7 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
@@ -137,7 +138,7 @@ public abstract class WPanel extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter!=null) backgroundPainter.paintBackground(context, x, y, this);
 
 		for(WWidget child : children) {

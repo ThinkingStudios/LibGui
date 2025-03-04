@@ -1,12 +1,13 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
+import net.minecraft.client.gui.screen.Screen;
+
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
 import io.github.cottonmc.cotton.gui.widget.data.ObservableProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
-import net.minecraft.client.gui.screens.Screen;
 
 /**
  * The implementation for mouse inputs.

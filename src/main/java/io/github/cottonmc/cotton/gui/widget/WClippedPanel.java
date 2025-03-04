@@ -1,6 +1,7 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
+
 import io.github.cottonmc.cotton.gui.client.Scissors;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,7 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class WClippedPanel extends WPanel {
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (getBackgroundPainter()!=null) getBackgroundPainter().paintBackground(context, x, y, this);
 
 		Scissors.push(x, y, width, height);

@@ -1,5 +1,11 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
+import net.minecraft.client.gui.AbstractParentElement;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
+
 import io.github.cottonmc.cotton.gui.widget.WPanel;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.Rect2i;
@@ -10,11 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.navigation.FocusNavigationEvent;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 
 public final class FocusElements {
 	public static PanelFocusElement ofPanel(WPanel panel) {
@@ -38,7 +39,7 @@ public final class FocusElements {
 		return focusModel.foci().map(focus -> new LeafFocusElement(widget, focus));
 	}
 
-	public sealed interface FocusElement<W extends WWidget> extends GuiEventListener {
+	public sealed interface FocusElement<W extends WWidget> extends Element {
 		W widget();
 	}
 
@@ -72,9 +73,9 @@ public final class FocusElements {
 		}
 
 		@Override
-		public ScreenRectangle getRectangle() {
+		public ScreenRect getNavigationFocus() {
 			Rect2i area = focus.area();
-			return new ScreenRectangle(
+			return new ScreenRect(
 					widget.getAbsoluteX() + area.x(),
 					widget.getAbsoluteY() + area.y(),
 					area.width(), area.height()
@@ -82,12 +83,12 @@ public final class FocusElements {
 		}
 
 		@Override
-		public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent navigation) {
-			return widget.canFocus() && !isFocused() ? ComponentPath.leaf(this) : null;
+		public @Nullable GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+			return widget.canFocus() && !isFocused() ? GuiNavigationPath.of(this) : null;
 		}
 	}
 
-	private static final class PanelFocusElement extends AbstractContainerEventHandler implements FocusElement<WPanel> {
+	private static final class PanelFocusElement extends AbstractParentElement implements FocusElement<WPanel> {
 		private final List<FocusElement<?>> children = new ArrayList<>();
 		private final WPanel widget;
 		private List<WWidget> childWidgets;
@@ -131,7 +132,7 @@ public final class FocusElements {
 		}
 
 		@Override
-		public @Nullable GuiEventListener getFocused() {
+		public @Nullable Element getFocused() {
 			refreshFocus();
 			return super.getFocused();
 		}

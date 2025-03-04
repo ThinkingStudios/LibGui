@@ -1,7 +1,6 @@
 package io.github.cottonmc.cotton.gui.widget.icon;
 
-import net.minecraft.client.gui.GuiGraphics;
-
+import net.minecraft.client.gui.DrawContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -22,5 +21,5 @@ public interface Icon {
 	 * @param size    the size of this icon in pixels (size N means a N*N square)
 	 */
 	@OnlyIn(Dist.CLIENT)
-	void paint(GuiGraphics context, int x, int y, int size);
+	void paint(DrawContext context, int x, int y, int size);
 }

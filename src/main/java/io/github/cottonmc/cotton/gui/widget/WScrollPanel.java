@@ -1,7 +1,8 @@
 package io.github.cottonmc.cotton.gui.widget;
 
 import org.thinkingstudio.libgui_foxified.base.util.TriState;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
@@ -91,7 +92,7 @@ public class WScrollPanel extends WClippedPanel {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (verticalScrollBar.getValue() != lastVerticalScroll || horizontalScrollBar.getValue() != lastHorizontalScroll) {
 			layout();
 			lastHorizontalScroll = horizontalScrollBar.getValue();

@@ -1,9 +1,10 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.LibGui;
 import io.github.cottonmc.cotton.gui.impl.VisualLogger;
@@ -326,7 +327,7 @@ public class WWidget {
 	 * @since 2.0.0
 	 */
 	@OnlyIn(Dist.CLIENT)
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 	}
 
 	/**
@@ -353,19 +354,19 @@ public class WWidget {
 	 * @param tY      the Y coordinate of the tooltip
 	 */
 	@OnlyIn(Dist.CLIENT)
-	public void renderTooltip(GuiGraphics context, int x, int y, int tX, int tY) {
+	public void renderTooltip(DrawContext context, int x, int y, int tX, int tY) {
 		TooltipBuilder builder = new TooltipBuilder();
 		addTooltip(builder);
 
 		if (builder.size() == 0) return;
 
-		var client = Minecraft.getInstance();
-		context.renderTooltip(client.font, builder.lines, DefaultTooltipPositioner.INSTANCE, tX + x, tY + y);
+		var client = MinecraftClient.getInstance();
+		context.drawTooltip(client.textRenderer, builder.lines, HoveredTooltipPositioner.INSTANCE, tX + x, tY + y);
 	}
 
 	/**
 	 * Creates component peers and initializes animation data for this Widget and all its children.
-	 * The host {@linkplain net.minecraft.world.inventory.AbstractContainerMenu screen handler} must clear any heavyweight peers
+	 * The host {@linkplain net.minecraft.screen.ScreenHandler screen handler} must clear any heavyweight peers
 	 * from its records before this method is called.
 	 *
 	 * <p>This method must be called on the root panel of any screen once the widgets have been initialized.
@@ -498,7 +499,7 @@ public class WWidget {
 	 *
 	 * <p>Hovering is used by LibGui itself mostly for narration support.
 	 * For rendering, it might be preferable that you check the mouse coordinates in
-	 * {@link #paint(GuiGraphics, int, int, int, int) paint()} directly.
+	 * {@link #paint(DrawContext, int, int, int, int) paint()} directly.
 	 * That lets you react to different parts of the widget being hovered over.
 	 *
 	 * @return the {@code hovered} property
@@ -536,7 +537,7 @@ public class WWidget {
 	/**
 	 * {@return whether this widget can be narrated}
 	 *
-	 * @see #addNarrations(NarrationElementOutput)
+	 * @see #addNarrations(NarrationMessageBuilder)
 	 * @since 4.2.0
 	 */
 	public boolean isNarratable() {
@@ -554,7 +555,7 @@ public class WWidget {
 	 * @since 4.2.0
 	 */
 	@OnlyIn(Dist.CLIENT)
-	public void addNarrations(NarrationElementOutput builder) {
+	public void addNarrations(NarrationMessageBuilder builder) {
 	}
 
 	/**

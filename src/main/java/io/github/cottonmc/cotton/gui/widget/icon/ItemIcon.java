@@ -1,10 +1,9 @@
 package io.github.cottonmc.cotton.gui.widget.icon;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -36,18 +35,18 @@ public class ItemIcon implements Icon {
 	 * @since 3.2.0
 	 */
 	public ItemIcon(Item item) {
-		this(Objects.requireNonNull(item, "item").getDefaultInstance());
+		this(Objects.requireNonNull(item, "item").getDefaultStack());
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int size) {
+	public void paint(DrawContext context, int x, int y, int size) {
 		float scale = size != 16 ? ((float) size / 16f) : 1f;
-		PoseStack matrices = context.pose();
-		matrices.pushPose();
+		MatrixStack matrices = context.getMatrices();
+		matrices.push();
 		matrices.translate(x, y, 0);
 		matrices.scale(scale, scale, 1);
-		context.renderFakeItem(stack, 0, 0);
-		matrices.popPose();
+		context.drawItemWithoutEntity(stack, 0, 0);
+		matrices.pop();
 	}
 }

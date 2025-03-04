@@ -1,23 +1,31 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
 license = "MIT"
+
 [[mods]]
 modId = "libgui"
 version = "${version}"
-displayName = "Libgui"
-logoFile="icon.png"
-authors="Falkreon,Juuz"
+displayName = "LibGuiFoxified"
+displayURL = "https://github.com/ThinkingStudio/LibGuiFoxified"
+credits = "Falkreon, Juuz"
+authors = "TexTrue, ThinkingStudio"
+description = '''
+LibGui unofficial (Neo)Forge port.
 
-description = '''Easy grid-based GUIs for (Neo)Forge'''
+Easy grid-based GUIs for (Neo)Forge
+'''
+logoFile = "icon.png"
+
 [[dependencies.libgui]]
 modId = "forge"
 mandatory = true
 versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
+
 [[dependencies.libgui]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20,1.21)"
+versionRange = "[1.20,1.20.2)"
 ordering = "NONE"
 side = "BOTH"

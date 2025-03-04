@@ -1,22 +1,22 @@
 package io.github.cottonmc.cotton.gui;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 
 /**
  * An empty inventory that cannot hold any items.
  */
-public class EmptyInventory implements Container {
+public class EmptyInventory implements Inventory {
 	public static final EmptyInventory INSTANCE = new EmptyInventory();
 	
 	private EmptyInventory() {}
 	
 	@Override
-	public void clearContent() {}
+	public void clear() {}
 	
 	@Override
-	public int getContainerSize() {
+	public int size() {
 		return 0;
 	}
 	
@@ -26,30 +26,30 @@ public class EmptyInventory implements Container {
 	}
 	
 	@Override
-	public ItemStack getItem(int slot) {
+	public ItemStack getStack(int slot) {
 		return ItemStack.EMPTY;
 	}
 	
 	@Override
-	public ItemStack removeItem(int slot, int count) {
+	public ItemStack removeStack(int slot, int count) {
 		return ItemStack.EMPTY;
 	}
 	
 	@Override
-	public ItemStack removeItemNoUpdate(int slot) {
+	public ItemStack removeStack(int slot) {
 		return ItemStack.EMPTY;
 	}
 	
 	@Override
-	public void setItem(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 	}
 
 	@Override
-	public void setChanged() {
+	public void markDirty() {
 	}
 
 	@Override
-	public boolean stillValid(Player player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return true;
 	}
 

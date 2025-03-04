@@ -1,6 +1,7 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
@@ -80,7 +81,7 @@ public class WListPanel<D, W extends WWidget> extends WClippedPanel {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (scrollBar.getValue()!=lastScroll) {
 			layout();
 			lastScroll = scrollBar.getValue();

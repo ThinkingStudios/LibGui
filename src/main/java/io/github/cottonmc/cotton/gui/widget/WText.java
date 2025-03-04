@@ -1,13 +1,14 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
@@ -25,20 +26,20 @@ import java.util.Objects;
  * @since 1.8.0
  */
 public class WText extends WWidget {
-	protected Component text;
+	protected Text text;
 	protected int color;
 	protected int darkmodeColor;
 	protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 	protected VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 	@OnlyIn(Dist.CLIENT)
-	private List<FormattedCharSequence> wrappedLines;
+	private List<OrderedText> wrappedLines;
 	private boolean wrappingScheduled = false;
 
-	public WText(Component text) {
+	public WText(Text text) {
 		this(text, WLabel.DEFAULT_TEXT_COLOR);
 	}
 
-	public WText(Component text, int color) {
+	public WText(Text text, int color) {
 		this.text = Objects.requireNonNull(text, "text must not be null");
 		this.color = color;
 		this.darkmodeColor = (color == WLabel.DEFAULT_TEXT_COLOR) ? WLabel.DEFAULT_DARKMODE_TEXT_COLOR : color;
@@ -57,8 +58,8 @@ public class WText extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	private void wrapLines() {
-		Font font = Minecraft.getInstance().font;
-		wrappedLines = font.split(text, width);
+		TextRenderer font = MinecraftClient.getInstance().textRenderer;
+		wrappedLines = font.wrapLines(text, width);
 	}
 
 	/**
@@ -71,12 +72,12 @@ public class WText extends WWidget {
 	@OnlyIn(Dist.CLIENT)
 	@Nullable
 	public Style getTextStyleAt(int x, int y) {
-		Font font = Minecraft.getInstance().font;
-		int lineIndex = y / font.lineHeight;
+		TextRenderer font = MinecraftClient.getInstance().textRenderer;
+		int lineIndex = y / font.fontHeight;
 
 		if (lineIndex >= 0 && lineIndex < wrappedLines.size()) {
-			FormattedCharSequence line = wrappedLines.get(lineIndex);
-			return font.getSplitter().componentStyleAtWidth(line, x);
+			OrderedText line = wrappedLines.get(lineIndex);
+			return font.getTextHandler().getStyleAt(line, x);
 		}
 
 		return null;
@@ -84,25 +85,25 @@ public class WText extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (wrappedLines == null || wrappingScheduled) {
 			wrapLines();
 			wrappingScheduled = false;
 		}
 
-		Font font = Minecraft.getInstance().font;
+		TextRenderer font = MinecraftClient.getInstance().textRenderer;
 
 		int yOffset = switch (verticalAlignment) {
-			case CENTER -> height / 2 - font.lineHeight * wrappedLines.size() / 2;
-			case BOTTOM -> height - font.lineHeight * wrappedLines.size();
+			case CENTER -> height / 2 - font.fontHeight * wrappedLines.size() / 2;
+			case BOTTOM -> height - font.fontHeight * wrappedLines.size();
 			case TOP -> 0;
 		};
 
 		for (int i = 0; i < wrappedLines.size(); i++) {
-			FormattedCharSequence line = wrappedLines.get(i);
+			OrderedText line = wrappedLines.get(i);
 			int c = shouldRenderInDarkMode() ? darkmodeColor : color;
 
-			ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.lineHeight, width, c);
+			ScreenDrawing.drawString(context, line, horizontalAlignment, x, y + yOffset + i * font.fontHeight, width, c);
 		}
 
 		Style hoveredTextStyle = getTextStyleAt(mouseX, mouseY);
@@ -116,7 +117,7 @@ public class WText extends WWidget {
 
 		Style hoveredTextStyle = getTextStyleAt(x, y);
 		if (hoveredTextStyle != null) {
-			boolean processed = Minecraft.getInstance().screen.handleComponentClicked(hoveredTextStyle);
+			boolean processed = MinecraftClient.getInstance().currentScreen.handleTextClick(hoveredTextStyle);
 			return InputResult.of(processed);
 		}
 
@@ -128,7 +129,7 @@ public class WText extends WWidget {
 	 *
 	 * @return the text
 	 */
-	public Component getText() {
+	public Text getText() {
 		return text;
 	}
 
@@ -138,7 +139,7 @@ public class WText extends WWidget {
 	 * @param text the new text
 	 * @return this label
 	 */
-	public WText setText(Component text) {
+	public WText setText(Text text) {
 		Objects.requireNonNull(text, "text is null");
 		this.text = text;
 		wrappingScheduled = true;
@@ -256,7 +257,7 @@ public class WText extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationElementOutput builder) {
-		builder.add(NarratedElementType.TITLE, text);
+	public void addNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, text);
 	}
 }

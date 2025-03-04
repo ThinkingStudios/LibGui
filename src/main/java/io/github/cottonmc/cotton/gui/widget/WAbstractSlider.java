@@ -1,9 +1,10 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
+
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
@@ -168,7 +169,7 @@ public abstract class WAbstractSlider extends WWidget {
 		int pos = axisPos - getThumbWidth() / 2;
 		int rawValue = min + Math.round(valueToCoordRatio * pos);
 		int previousValue = value;
-		value = Mth.clamp(rawValue, min, max);
+		value = MathHelper.clamp(rawValue, min, max);
 		if (value != previousValue) onValueChanged(value);
 	}
 
@@ -188,7 +189,7 @@ public abstract class WAbstractSlider extends WWidget {
 		}
 
 		int previous = value;
-		value = Mth.clamp(value + (int) Math.signum(amount) * Mth.ceil(valueToCoordRatio * Math.abs(amount) * 2), min, max);
+		value = MathHelper.clamp(value + (int) Math.signum(amount) * MathHelper.ceil(valueToCoordRatio * Math.abs(amount) * 2), min, max);
 
 		if (previous != value) {
 			onValueChanged(value);
@@ -232,7 +233,7 @@ public abstract class WAbstractSlider extends WWidget {
 	 */
 	public void setValue(int value, boolean callListeners) {
 		int previous = this.value;
-		this.value = Mth.clamp(value, min, max);
+		this.value = MathHelper.clamp(value, min, max);
 		if (callListeners && previous != this.value) {
 			onValueChanged(this.value);
 			if (draggingFinishedListener != null) draggingFinishedListener.accept(value);
@@ -370,9 +371,9 @@ public abstract class WAbstractSlider extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void addNarrations(NarrationElementOutput builder) {
-		builder.add(NarratedElementType.TITLE, Component.translatable(NarrationMessages.SLIDER_MESSAGE_KEY, value, min, max));
-		builder.add(NarratedElementType.USAGE, NarrationMessages.SLIDER_USAGE);
+	public void addNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, Text.translatable(NarrationMessages.SLIDER_MESSAGE_KEY, value, min, max));
+		builder.put(NarrationPart.USAGE, NarrationMessages.SLIDER_USAGE);
 	}
 
 	/**

@@ -73,22 +73,19 @@ repositories {
 			includeGroup "io.github.cottonmc"
 		}
 	}
-	maven {
-		name = 'NeoForged'
-		url = 'https://maven.neoforged.net/releases'
-	}
 	maven { url "https://jitpack.io" }
 	maven { url "https://maven.su5ed.dev/releases" }
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:${project.minecraft_version}"
-	mappings(loom.officialMojangMappings())
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
 	forgeRuntimeLibrary(implementation(include("blue.endless:jankson:1.2.3")))
 
 	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+	forgeRuntimeLibrary("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
 
 	// Test mod dependencies
 	//testModImplementation sourceSets.main.output
@@ -97,7 +94,7 @@ dependencies {
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("META-INF/neoforge.mods.toml") {
+	filesMatching("META-INF/mods.toml") {
 		expand "version": project.version
 	}
 }
@@ -105,6 +102,8 @@ processResources {
 java {
 	withSourcesJar()
 	withJavadocJar()
+
+	toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17

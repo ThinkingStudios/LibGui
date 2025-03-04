@@ -2,20 +2,21 @@ package io.github.cottonmc.cotton.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
+
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.client.NarrationMessages;
@@ -36,7 +37,7 @@ public class WTextField extends WWidget {
 	public static final int CURSOR_HEIGHT = 12;
 
 	@OnlyIn(Dist.CLIENT)
-	private Font font;
+	private TextRenderer font;
 
 	private String text = "";
 	private int maxLength = 16;
@@ -53,7 +54,7 @@ public class WTextField extends WWidget {
 	private static final int CURSOR_COLOR = 0xFFD0D0D0;
 
 	@Nullable
-	private Component suggestion = null;
+	private Text suggestion = null;
 
 	// Index of the leftmost character to be rendered.
 	private int scrollOffset = 0;
@@ -78,7 +79,7 @@ public class WTextField extends WWidget {
 	public WTextField() {
 	}
 
-	public WTextField(Component suggestion) {
+	public WTextField(Text suggestion) {
 		this.suggestion = suggestion;
 	}
 
@@ -130,7 +131,7 @@ public class WTextField extends WWidget {
 	}
 
 	private int clampCursor(int cursor) {
-		return Mth.clamp(cursor, 0, text.length());
+		return MathHelper.clamp(cursor, 0, text.length());
 	}
 
 	public void setCursorPos(int location) {
@@ -151,7 +152,7 @@ public class WTextField extends WWidget {
 		if (scrollOffset > cursor) {
 			scrollOffset = cursor;
 		}
-		if (scrollOffset < cursor && font.plainSubstrByWidth(text.substring(scrollOffset), width - TEXT_PADDING_X * 2).length() + scrollOffset < cursor) {
+		if (scrollOffset < cursor && font.trimToWidth(text.substring(scrollOffset), width - TEXT_PADDING_X * 2).length() + scrollOffset < cursor) {
 			scrollOffset = cursor;
 		}
 
@@ -160,7 +161,7 @@ public class WTextField extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	private void checkScrollOffset() {
-		int rightMostScrollOffset = text.length() - font.plainSubstrByWidth(text, width - TEXT_PADDING_X * 2, true).length();
+		int rightMostScrollOffset = text.length() - font.trimToWidth(text, width - TEXT_PADDING_X * 2, true).length();
 		scrollOffset = Math.min(rightMostScrollOffset, scrollOffset);
 	}
 
@@ -184,35 +185,35 @@ public class WTextField extends WWidget {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderBox(GuiGraphics context, int x, int y) {
+	protected void renderBox(DrawContext context, int x, int y) {
 		int borderColor = this.isFocused() ? BORDER_COLOR_SELECTED : BORDER_COLOR_UNSELECTED;
 		ScreenDrawing.coloredRect(context, x - 1, y - 1, width + 2, height + 2, borderColor);
 		ScreenDrawing.coloredRect(context, x, y, width, height, BACKGROUND_COLOR);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderText(GuiGraphics context, int x, int y, String visibleText) {
+	protected void renderText(DrawContext context, int x, int y, String visibleText) {
 		int textColor = this.editable ? this.enabledColor : this.disabledColor;
-		context.drawString(font, visibleText, x + TEXT_PADDING_X, y + TEXT_PADDING_Y, textColor, true);
+		context.drawText(font, visibleText, x + TEXT_PADDING_X, y + TEXT_PADDING_Y, textColor, true);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderCursor(GuiGraphics context, int x, int y, String visibleText) {
+	protected void renderCursor(DrawContext context, int x, int y, String visibleText) {
 		if (this.tickCount / 6 % 2 == 0) return;
 		if (this.cursor < this.scrollOffset) return;
 		if (this.cursor > this.scrollOffset + visibleText.length()) return;
-		int cursorOffset = this.font.width(visibleText.substring(0, this.cursor - this.scrollOffset));
+		int cursorOffset = this.font.getWidth(visibleText.substring(0, this.cursor - this.scrollOffset));
 		ScreenDrawing.coloredRect(context, x + TEXT_PADDING_X + cursorOffset, y + CURSOR_PADDING_Y, 1, CURSOR_HEIGHT, CURSOR_COLOR);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderSuggestion(GuiGraphics context, int x, int y) {
+	protected void renderSuggestion(DrawContext context, int x, int y) {
 		if (this.suggestion == null) return;
-		context.drawString(font, suggestion, x + TEXT_PADDING_X, y + TEXT_PADDING_Y, this.suggestionColor, true);
+		context.drawText(font, suggestion, x + TEXT_PADDING_X, y + TEXT_PADDING_Y, this.suggestionColor, true);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderSelection(GuiGraphics context, int x, int y, String visibleText) {
+	protected void renderSelection(DrawContext context, int x, int y, String visibleText) {
 		if (select == cursor || select == -1) return;
 
 		int textLength = visibleText.length();
@@ -225,18 +226,18 @@ public class WTextField extends WWidget {
 		int normalizedLeft = Math.max(scrollOffset, left) - scrollOffset;
 		int normalizedRight = Math.min(scrollOffset + textLength, right) - scrollOffset;
 
-		int leftCaret = font.width(visibleText.substring(0, normalizedLeft));
-		int selectionWidth = font.width(visibleText.substring(normalizedLeft, normalizedRight));
+		int leftCaret = font.getWidth(visibleText.substring(0, normalizedLeft));
+		int selectionWidth = font.getWidth(visibleText.substring(normalizedLeft, normalizedRight));
 
 		invertedRect(context, x + TEXT_PADDING_X + leftCaret, y + CURSOR_PADDING_Y, selectionWidth, CURSOR_HEIGHT);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	protected void renderTextField(GuiGraphics context, int x, int y) {
-		if (this.font == null) this.font = Minecraft.getInstance().font;
+	protected void renderTextField(DrawContext context, int x, int y) {
+		if (this.font == null) this.font = MinecraftClient.getInstance().textRenderer;
 
 		checkScrollOffset();
-		String visibleText = font.plainSubstrByWidth(this.text.substring(this.scrollOffset), this.width - 2 * TEXT_PADDING_X);
+		String visibleText = font.trimToWidth(this.text.substring(this.scrollOffset), this.width - 2 * TEXT_PADDING_X);
 		renderBox(context, x, y);
 		renderText(context, x, y, visibleText);
 		if (this.text.isEmpty() && !this.isFocused()) {
@@ -249,20 +250,20 @@ public class WTextField extends WWidget {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	private void invertedRect(GuiGraphics context, int x, int y, int width, int height) {
-		Tesselator tessellator = Tesselator.getInstance();
-		BufferBuilder buffer = tessellator.getBuilder();
-		Matrix4f model = context.pose().last().pose();
+	private void invertedRect(DrawContext context, int x, int y, int width, int height) {
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder buffer = tessellator.getBuffer();
+		Matrix4f model = context.getMatrices().peek().getPositionMatrix();
 		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-		buffer.vertex(model, x, y + height, 0).endVertex();
-		buffer.vertex(model, x + width, y + height, 0).endVertex();
-		buffer.vertex(model, x + width, y, 0).endVertex();
-		buffer.vertex(model, x, y, 0).endVertex();
-		BufferUploader.drawWithShader(buffer.end());
+		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+		buffer.vertex(model, x, y + height, 0).next();
+		buffer.vertex(model, x + width, y + height, 0).next();
+		buffer.vertex(model, x + width, y, 0).next();
+		buffer.vertex(model, x, y, 0).next();
+		BufferRenderer.drawWithGlobalProgram(buffer.end());
 		RenderSystem.disableColorLogicOp();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
@@ -306,11 +307,11 @@ public class WTextField extends WWidget {
 	}
 
 	@Nullable
-	public Component getSuggestion() {
+	public Text getSuggestion() {
 		return suggestion;
 	}
 
-	public WTextField setSuggestion(@Nullable Component suggestion) {
+	public WTextField setSuggestion(@Nullable Text suggestion) {
 		this.suggestion = suggestion;
 		return this;
 	}
@@ -331,7 +332,7 @@ public class WTextField extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		renderTextField(context, x, y);
 	}
 
@@ -351,7 +352,7 @@ public class WTextField extends WWidget {
 		checkScrollOffset();
 		String string = text.substring(scrollOffset);
 		for (int i = 0; i < string.length(); i++) {
-			int w = font.width(string.charAt(i) + "");
+			int w = font.getWidth(string.charAt(i) + "");
 			if (lastPos + w >= clickX) {
 				if (clickX - lastPos < w / 2) {
 					return i + scrollOffset;
@@ -393,13 +394,13 @@ public class WTextField extends WWidget {
 	private void copySelection() {
 		String selection = getSelection();
 		if (selection != null) {
-			Minecraft.getInstance().keyboardHandler.setClipboard(selection);
+			MinecraftClient.getInstance().keyboard.setClipboard(selection);
 		}
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private void paste() {
-		String clip = Minecraft.getInstance().keyboardHandler.getClipboard();
+		String clip = MinecraftClient.getInstance().keyboard.getClipboard();
 		insertText(clip);
 	}
 
@@ -500,11 +501,11 @@ public class WTextField extends WWidget {
 	}
 
 	@Override
-	public void addNarrations(NarrationElementOutput builder) {
-		builder.add(NarratedElementType.TITLE, Component.translatable(NarrationMessages.TEXT_FIELD_TITLE_KEY, text));
+	public void addNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, Text.translatable(NarrationMessages.TEXT_FIELD_TITLE_KEY, text));
 
 		if (suggestion != null) {
-			builder.add(NarratedElementType.HINT, Component.translatable(NarrationMessages.TEXT_FIELD_SUGGESTION_KEY, suggestion));
+			builder.put(NarrationPart.HINT, Text.translatable(NarrationMessages.TEXT_FIELD_SUGGESTION_KEY, suggestion));
 		}
 	}
 }

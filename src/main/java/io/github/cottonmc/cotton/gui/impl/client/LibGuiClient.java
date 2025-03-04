@@ -3,11 +3,9 @@ package io.github.cottonmc.cotton.gui.impl.client;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
-import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
-import net.minecraftforge.fml.loading.FMLPaths;
+import org.thinkingstudio.libgui_foxified.jankson.JanksonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.thinkingstudio.libgui_foxified.jankson.JanksonFactory;
 import org.thinkingstudio.libgui_foxified.loader.FoxifiedLoader;
 
 import java.io.InputStream;
@@ -28,7 +26,7 @@ public class LibGuiClient {
 //			ScreenNetworkingImpl.handle(client, client.player, buf);
 //		});
 
-//		LibGuiShaders.register();
+		LibGuiShaders.register();
 	}
 
 	public static LibGuiConfig loadConfig() {

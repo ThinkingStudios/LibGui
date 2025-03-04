@@ -1,7 +1,8 @@
 package io.github.cottonmc.cotton.gui.widget.icon;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
+
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +23,7 @@ public class TextureIcon implements Icon {
 	 *
 	 * @param texture the identifier of the icon texture
 	 */
-	public TextureIcon(ResourceLocation texture) {
+	public TextureIcon(Identifier texture) {
 		this(new Texture(texture));
 	}
 
@@ -78,7 +79,7 @@ public class TextureIcon implements Icon {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int size) {
+	public void paint(DrawContext context, int x, int y, int size) {
 		ScreenDrawing.texturedRect(context, x, y, size, size, texture, color, opacity);
 	}
 }

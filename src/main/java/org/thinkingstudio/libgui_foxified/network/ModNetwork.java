@@ -1,13 +1,14 @@
 package org.thinkingstudio.libgui_foxified.network;
 
+import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraft.resources.ResourceLocation;
 
-public class ModNetworking {
+public class ModNetwork {
 	private static final String PROTOCOL_VERSION = "1";
 	public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-		new ResourceLocation("modid", "main"),
+		new Identifier(LibGuiCommon.MOD_ID, "main"),
 		() -> PROTOCOL_VERSION,
 		PROTOCOL_VERSION::equals,
 		PROTOCOL_VERSION::equals

@@ -1,6 +1,7 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
+
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
  * They can be used for automatically getting data from a block entity or another data source.
  *
  * <p>Translating strings in dynamic labels should be done using
- * {@link net.minecraft.client.resources.language.I18n#get(String, Object...)}.
+ * {@link net.minecraft.client.resource.language.I18n#translate(String, Object...)}.
  */
 public class WDynamicLabel extends WWidget {
 	protected Supplier<String> text;
@@ -36,7 +37,7 @@ public class WDynamicLabel extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		String tr = text.get();
 		ScreenDrawing.drawString(context, tr, alignment, x, y, this.getWidth(), shouldRenderInDarkMode() ? darkmodeColor : color);
 	}

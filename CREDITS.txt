@@ -1,1 +1,4 @@
 - Dark-mode button textures (dark_widgets.png) are adapted from Roughly Enough Items by shedaniel, licensed under MIT
+- [Fabric Rendering API v1 & Fabric Lifecycle Events](src/main/java/org/thinkingstudio/libgui_foxified/events) under Apache License 2.0
+- [Fabric API Base](src/main/java/org/thinkingstudio/libgui_foxified/base) under Apache License 2.0
+- [Cotton's Jankson](src/main/java/org/thinkingstudio/libgui_foxified/jankson) under MIT

@@ -1,7 +1,8 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
+
 import io.github.cottonmc.cotton.gui.client.BackgroundPainter;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
@@ -18,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 public class WSlider extends WAbstractSlider {
 	public static final int TRACK_WIDTH = 6;
 	public static final int THUMB_SIZE = 8;
-	public static final ResourceLocation LIGHT_TEXTURE = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/slider_light.png");
-	public static final ResourceLocation DARK_TEXTURE = new ResourceLocation(LibGuiCommon.MOD_ID, "textures/widget/slider_dark.png");
+	public static final Identifier LIGHT_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/slider_light.png");
+	public static final Identifier DARK_TEXTURE = new Identifier(LibGuiCommon.MOD_ID, "textures/widget/slider_dark.png");
 
 	@OnlyIn(Dist.CLIENT)
 	@Nullable
@@ -47,7 +48,7 @@ public class WSlider extends WAbstractSlider {
 	@SuppressWarnings("SuspiciousNameCombination")
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (backgroundPainter != null) {
 			backgroundPainter.paintBackground(context, x, y, this);
 		} else {
@@ -56,7 +57,7 @@ public class WSlider extends WAbstractSlider {
 			int thumbX, thumbY;
 			// thumbXOffset: thumb texture x offset in pixels
 			int thumbXOffset;
-			ResourceLocation texture = shouldRenderInDarkMode() ? DARK_TEXTURE : LIGHT_TEXTURE;
+			Identifier texture = shouldRenderInDarkMode() ? DARK_TEXTURE : LIGHT_TEXTURE;
 
 			if (axis == Axis.VERTICAL) {
 				int trackX = x + width / 2 - TRACK_WIDTH / 2;

@@ -1,10 +1,11 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
@@ -13,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A bar that displays int values from a {@link ContainerData}.
+ * A bar that displays int values from a {@link PropertyDelegate}.
  *
  * <p>Bars can be used for all kinds of bars including
  * progress bars (and progress arrows) and energy bars.
@@ -50,7 +51,7 @@ public class WBar extends WWidget {
 	 *
 	 * <p>This constant will only be used if {@link #max} is negative.
 	 *
-	 * @see #withConstantMaximum(ResourceLocation, ResourceLocation, int, int, Direction)
+	 * @see #withConstantMaximum(Identifier, Identifier, int, int, Direction)
 	 */
 	protected int maxValue;
 
@@ -60,7 +61,7 @@ public class WBar extends WWidget {
 	 * <p>The current value is read from the property with ID {@link #field},
 	 * and the maximum value is usually read from the property with ID {@link #max}.
 	 */
-	protected ContainerData properties;
+	protected PropertyDelegate properties;
 	private boolean manuallySetProperties = false;
 
 	/**
@@ -80,7 +81,7 @@ public class WBar extends WWidget {
 	 * A tooltip text component. This can be used instead of {@link #tooltipLabel},
 	 * or together with it. In that case, this component will be drawn after the other label.
 	 */
-	protected Component tooltipTextComponent;
+	protected Text tooltipTextComponent;
 
 	public WBar(@Nullable Texture bg, @Nullable Texture bar, int field, int maxField) {
 		this(bg, bar, field, maxField, Direction.UP);
@@ -95,11 +96,11 @@ public class WBar extends WWidget {
 		this.direction = dir;
 	}
 
-	public WBar(ResourceLocation bg, ResourceLocation bar, int field, int maxField) {
+	public WBar(Identifier bg, Identifier bar, int field, int maxField) {
 		this(bg, bar, field, maxField, Direction.UP);
 	}
 
-	public WBar(ResourceLocation bg, ResourceLocation bar, int field, int maxField, Direction dir) {
+	public WBar(Identifier bg, Identifier bar, int field, int maxField, Direction dir) {
 		this(new Texture(bg), new Texture(bar), field, maxField, dir);
 	}
 
@@ -119,12 +120,12 @@ public class WBar extends WWidget {
 	}
 
 	/**
-	 * Adds a tooltip {@link Component} to the WBar.
+	 * Adds a tooltip {@link Text} to the WBar.
 	 *
 	 * @param label the added tooltip label
 	 * @return this bar
 	 */
-	public WBar withTooltip(Component label) {
+	public WBar withTooltip(Text label) {
 		this.tooltipTextComponent = label;
 		return this;
 	}
@@ -136,7 +137,7 @@ public class WBar extends WWidget {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paint(GuiGraphics context, int x, int y, int mouseX, int mouseY) {
+	public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (bg != null) {
 			ScreenDrawing.texturedRect(context, x, y, getWidth(), getHeight(), bg, 0xFFFFFFFF);
 		} else {
@@ -161,7 +162,7 @@ public class WBar extends WWidget {
 				int top = y + getHeight();
 				top -= barSize;
 				if (bar != null) {
-					ScreenDrawing.texturedRect(context, left, top, getWidth(), barSize, bar.image(), bar.u1(), Mth.lerp(percent, bar.v2(), bar.v1()), bar.u2(), bar.v2(), 0xFFFFFFFF);
+					ScreenDrawing.texturedRect(context, left, top, getWidth(), barSize, bar.image(), bar.u1(), MathHelper.lerp(percent, bar.v2(), bar.v1()), bar.u2(), bar.v2(), 0xFFFFFFFF);
 				} else {
 					ScreenDrawing.coloredRect(context, left, top, getWidth(), barSize, ScreenDrawing.colorAtOpacity(0xFFFFFF, 0.5f));
 				}
@@ -169,7 +170,7 @@ public class WBar extends WWidget {
 
 			case RIGHT -> {
 				if (bar != null) {
-					ScreenDrawing.texturedRect(context, x, y, barSize, getHeight(), bar.image(), bar.u1(), bar.v1(), Mth.lerp(percent, bar.u1(), bar.u2()), bar.v2(), 0xFFFFFFFF);
+					ScreenDrawing.texturedRect(context, x, y, barSize, getHeight(), bar.image(), bar.u1(), bar.v1(), MathHelper.lerp(percent, bar.u1(), bar.u2()), bar.v2(), 0xFFFFFFFF);
 				} else {
 					ScreenDrawing.coloredRect(context, x, y, barSize, getHeight(), ScreenDrawing.colorAtOpacity(0xFFFFFF, 0.5f));
 				}
@@ -177,7 +178,7 @@ public class WBar extends WWidget {
 
 			case DOWN -> {
 				if (bar != null) {
-					ScreenDrawing.texturedRect(context, x, y, getWidth(), barSize, bar.image(), bar.u1(), bar.v1(), bar.u2(), Mth.lerp(percent, bar.v1(), bar.v2()), 0xFFFFFFFF);
+					ScreenDrawing.texturedRect(context, x, y, getWidth(), barSize, bar.image(), bar.u1(), bar.v1(), bar.u2(), MathHelper.lerp(percent, bar.v1(), bar.v2()), 0xFFFFFFFF);
 				} else {
 					ScreenDrawing.coloredRect(context, x, y, getWidth(), barSize, ScreenDrawing.colorAtOpacity(0xFFFFFF, 0.5f));
 				}
@@ -188,7 +189,7 @@ public class WBar extends WWidget {
 				int top = y;
 				left -= barSize;
 				if (bar != null) {
-					ScreenDrawing.texturedRect(context, left, top, barSize, getHeight(), bar.image(), Mth.lerp(percent, bar.u2(), bar.u1()), bar.v1(), bar.u2(), bar.v2(), 0xFFFFFFFF);
+					ScreenDrawing.texturedRect(context, left, top, barSize, getHeight(), bar.image(), MathHelper.lerp(percent, bar.u2(), bar.u1()), bar.v1(), bar.u2(), bar.v2(), 0xFFFFFFFF);
 				} else {
 					ScreenDrawing.coloredRect(context, left, top, barSize, getHeight(), ScreenDrawing.colorAtOpacity(0xFFFFFF, 0.5f));
 				}
@@ -202,13 +203,13 @@ public class WBar extends WWidget {
 		if (tooltipLabel != null) {
 			int value = (field >= 0) ? properties.get(field) : 0;
 			int valMax = (max >= 0) ? properties.get(max) : maxValue;
-			information.add(Component.translatable(tooltipLabel, value, valMax));
+			information.add(Text.translatable(tooltipLabel, value, valMax));
 		}
 		if (tooltipTextComponent != null) {
 			try {
 				information.add(tooltipTextComponent);
 			} catch (Throwable t) {
-				information.add(Component.literal(t.getLocalizedMessage()));
+				information.add(Text.literal(t.getLocalizedMessage()));
 			}
 		}
 	}
@@ -225,7 +226,7 @@ public class WBar extends WWidget {
 	 * @return the current property delegate, or null if not initialized yet
 	 */
 	@Nullable
-	public ContainerData getProperties() {
+	public PropertyDelegate getProperties() {
 		return properties;
 	}
 
@@ -238,7 +239,7 @@ public class WBar extends WWidget {
 	 * @param properties the properties
 	 * @return this bar
 	 */
-	public WBar setProperties(ContainerData properties) {
+	public WBar setProperties(PropertyDelegate properties) {
 		this.properties = properties;
 		manuallySetProperties = properties != null;
 		return this;
@@ -254,7 +255,7 @@ public class WBar extends WWidget {
 	 * @param dir      the direction the bar should grow towards
 	 * @return a new WBar with a constant maximum value
 	 */
-	public static WBar withConstantMaximum(ResourceLocation bg, ResourceLocation bar, int field, int maxValue, Direction dir) {
+	public static WBar withConstantMaximum(Identifier bg, Identifier bar, int field, int maxValue, Direction dir) {
 		WBar result = new WBar(bg, bar, field, -1, dir);
 		result.maxValue = maxValue;
 		return result;

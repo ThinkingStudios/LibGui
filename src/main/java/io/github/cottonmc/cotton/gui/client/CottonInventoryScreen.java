@@ -1,6 +1,15 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
+
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.impl.VisualLogger;
@@ -12,14 +21,6 @@ import io.github.cottonmc.cotton.gui.impl.mixin.client.ScreenAccessor;
 import io.github.cottonmc.cotton.gui.widget.WPanel;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import io.github.cottonmc.cotton.gui.widget.data.InputResult;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
@@ -29,7 +30,7 @@ import org.lwjgl.opengl.GL11;
  *
  * @param <T> the description type
  */
-public class CottonInventoryScreen<T extends SyncedGuiDescription> extends AbstractContainerScreen<T> implements CottonScreenImpl {
+public class CottonInventoryScreen<T extends SyncedGuiDescription> extends HandledScreen<T> implements CottonScreenImpl {
 	private static final VisualLogger LOGGER = new VisualLogger(CottonInventoryScreen.class);
 	protected SyncedGuiDescription description;
 	@Nullable protected WWidget lastResponder = null;
@@ -42,8 +43,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	 * @param inventory   the player inventory
 	 * @since 5.2.0
 	 */
-	public CottonInventoryScreen(T description, Inventory inventory) {
-		this(description, inventory, CommonComponents.EMPTY);
+	public CottonInventoryScreen(T description, PlayerInventory inventory) {
+		this(description, inventory, ScreenTexts.EMPTY);
 	}
 
 	/**
@@ -54,13 +55,13 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	 * @param title       the screen title
 	 * @since 5.2.0
 	 */
-	public CottonInventoryScreen(T description, Inventory inventory, Component title) {
+	public CottonInventoryScreen(T description, PlayerInventory inventory, Text title) {
 		super(description, inventory, title);
 		this.description = description;
 		width = 18*9;
 		height = 18*9;
-		this.imageWidth = 18*9;
-		this.imageHeight = 18*9;
+		this.backgroundWidth = 18*9;
+		this.backgroundHeight = 18*9;
 		description.getRootPanel().validate(description);
 	}
 
@@ -70,7 +71,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	 * @param description the GUI description
 	 * @param player     the player
 	 */
-	public CottonInventoryScreen(T description, Player player) {
+	public CottonInventoryScreen(T description, PlayerEntity player) {
 		this(description, player.getInventory());
 	}
 
@@ -81,7 +82,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	 * @param player      the player
 	 * @param title       the screen title
 	 */
-	public CottonInventoryScreen(T description, Player player, Component title) {
+	public CottonInventoryScreen(T description, PlayerEntity player, Text title) {
 		this(description, player.getInventory(), title);
 	}
 	
@@ -106,7 +107,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 		reposition(width, height);
 
 		if (root != null) {
-			GuiEventListener rootPanelElement = FocusElements.ofPanel(root);
+			Element rootPanelElement = FocusElements.ofPanel(root);
 			((ScreenAccessor) this).libgui$getChildren().add(rootPanelElement);
 			setInitialFocus(rootPanelElement);
 		} else {
@@ -156,23 +157,23 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 			clearPeers();
 			basePanel.validate(description);
 
-			imageWidth = basePanel.getWidth();
-			imageHeight = basePanel.getHeight();
+			backgroundWidth = basePanel.getWidth();
+			backgroundHeight = basePanel.getHeight();
 			
 			//DEBUG
-			if (imageWidth<16) imageWidth=300;
-			if (imageHeight<16) imageHeight=300;
+			if (backgroundWidth<16) backgroundWidth=300;
+			if (backgroundHeight<16) backgroundHeight=300;
 		}
 
-		titleLabelX = description.getTitlePos().x();
-		titleLabelY = description.getTitlePos().y();
+		titleX = description.getTitlePos().x();
+		titleY = description.getTitlePos().y();
 
 		if (!description.isFullscreen()) {
-			leftPos = (screenWidth / 2) - (imageWidth / 2);
-			topPos = (screenHeight / 2) - (imageHeight / 2);
+			x = (screenWidth / 2) - (backgroundWidth / 2);
+			y = (screenHeight / 2) - (backgroundHeight / 2);
 		} else {
-			leftPos = 0;
-			topPos = 0;
+			x = 0;
+			y = 0;
 
 			if (basePanel != null) {
 				basePanel.setSize(screenWidth, screenHeight);
@@ -181,7 +182,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	}
 	
 	@Override
-	public boolean isPauseScreen() {
+	public boolean shouldPause() {
 		//...yeah, we're going to go ahead and override that.
 		return false;
 	}
@@ -190,8 +191,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 
-		int containerX = (int)mouseX-leftPos;
-		int containerY = (int)mouseY-topPos;
+		int containerX = (int)mouseX-x;
+		int containerY = (int)mouseY-y;
 		mouseInputHandler.checkFocus(containerX, containerY);
 		if (containerX<0 || containerY<0 || containerX>=width || containerY>=height) return true;
 		mouseInputHandler.onMouseDown(containerX, containerY, mouseButton);
@@ -203,8 +204,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
 		super.mouseReleased(mouseX, mouseY, mouseButton);
 
-		int containerX = (int)mouseX-leftPos;
-		int containerY = (int)mouseY-topPos;
+		int containerX = (int)mouseX-x;
+		int containerY = (int)mouseY-y;
 		mouseInputHandler.onMouseUp(containerX, containerY, mouseButton);
 
 		return true;
@@ -214,8 +215,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double deltaX, double deltaY) {
 		super.mouseDragged(mouseX, mouseY, mouseButton, deltaX, deltaY);
 
-		int containerX = (int)mouseX-leftPos;
-		int containerY = (int)mouseY-topPos;
+		int containerX = (int)mouseX-x;
+		int containerY = (int)mouseY-y;
 		mouseInputHandler.onMouseDrag(containerX, containerY, mouseButton, deltaX, deltaY);
 
 		return true;
@@ -225,8 +226,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		super.mouseScrolled(mouseX, mouseY, amount);
 
-		int containerX = (int)mouseX-leftPos;
-		int containerY = (int)mouseY-topPos;
+		int containerX = (int)mouseX-x;
+		int containerY = (int)mouseY-y;
 		mouseInputHandler.onMouseScroll(containerX, containerY, amount);
 
 		return true;
@@ -236,8 +237,8 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	public void mouseMoved(double mouseX, double mouseY) {
 		super.mouseMoved(mouseX, mouseY);
 
-		int containerX = (int)mouseX-leftPos;
-		int containerY = (int)mouseY-topPos;
+		int containerX = (int)mouseX-x;
+		int containerY = (int)mouseY-y;
 		mouseInputHandler.onMouseMove(containerX, containerY);
 	}
 
@@ -272,9 +273,9 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics context, float partialTicks, int mouseX, int mouseY) {} //This is just an AbstractContainerScreen thing; most Screens don't work this way.
+	protected void drawBackground(DrawContext context, float partialTicks, int mouseX, int mouseY) {} //This is just an AbstractContainerScreen thing; most Screens don't work this way.
 	
-	private void paint(GuiGraphics context, int mouseX, int mouseY) {
+	private void paint(DrawContext context, int mouseX, int mouseY) {
 		renderBackground(context);
 		
 		if (description!=null) {
@@ -282,7 +283,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 			if (root!=null) {
 				GL11.glEnable(GL11.GL_SCISSOR_TEST);
 				Scissors.refreshScissors();
-				root.paint(context, leftPos, topPos, mouseX-leftPos, mouseY-topPos);
+				root.paint(context, x, y, mouseX-x, mouseY-y);
 				GL11.glDisable(GL11.GL_SCISSOR_TEST);
 				Scissors.checkStackIsEmpty();
 			}
@@ -290,37 +291,37 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float partialTicks) {
+	public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
 		paint(context, mouseX, mouseY);
 		
 		super.render(context, mouseX, mouseY, partialTicks);
-		Lighting.setupForFlatItems(); //Needed because super.render leaves dirty state
+		DiffuseLighting.disableGuiDepthLighting(); //Needed because super.render leaves dirty state
 		
 		if (description!=null) {
 			WPanel root = description.getRootPanel();
 			if (root!=null) {
-				WWidget hitChild = root.hit(mouseX-leftPos, mouseY-topPos);
-				if (hitChild!=null) hitChild.renderTooltip(context, leftPos, topPos, mouseX-leftPos, mouseY-topPos);
+				WWidget hitChild = root.hit(mouseX-x, mouseY-y);
+				if (hitChild!=null) hitChild.renderTooltip(context, x, y, mouseX-x, mouseY-y);
 			}
 		}
 		
-		renderTooltip(context, mouseX, mouseY); //Draws the itemstack tooltips
+		drawMouseoverTooltip(context, mouseX, mouseY); //Draws the itemstack tooltips
 		VisualLogger.render(context);
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
+	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
 		if (description != null && description.isTitleVisible()) {
 			int width = description.getRootPanel().getWidth();
-			ScreenDrawing.drawString(context, getTitle().getVisualOrderText(), description.getTitleAlignment(), titleLabelX, titleLabelY, width - 2 * titleLabelX, description.getTitleColor());
+			ScreenDrawing.drawString(context, getTitle().asOrderedText(), description.getTitleAlignment(), titleX, titleY, width - 2 * titleX, description.getTitleColor());
 		}
 
 		// Don't draw the player inventory label as it's drawn by the widget itself
 	}
 
 	@Override
-	protected void containerTick() {
-		super.containerTick();
+	protected void handledScreenTick() {
+		super.handledScreenTick();
 		if (description!=null) {
 			WPanel root = description.getRootPanel();
 			if (root!=null) {
@@ -330,7 +331,7 @@ public class CottonInventoryScreen<T extends SyncedGuiDescription> extends Abstr
 	}
 
 	@Override
-	protected void updateNarratedWidget(NarrationElementOutput builder) {
+	protected void addElementNarrations(NarrationMessageBuilder builder) {
 		if (description != null) NarrationHelper.addNarrations(description.getRootPanel(), builder);
 	}
 }

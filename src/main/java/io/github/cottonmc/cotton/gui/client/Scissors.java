@@ -1,6 +1,6 @@
 package io.github.cottonmc.cotton.gui.client;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -53,11 +53,11 @@ public final class Scissors {
 	}
 
 	static void refreshScissors() {
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
 		if (STACK.isEmpty()) {
 			// Just use the full window framebuffer as a scissor
-			GL11.glScissor(0, 0, mc.getWindow().getWidth(), mc.getWindow().getHeight());
+			GL11.glScissor(0, 0, mc.getWindow().getFramebufferWidth(), mc.getWindow().getFramebufferHeight());
 			return;
 		}
 
@@ -81,8 +81,8 @@ public final class Scissors {
 			}
 		}
 
-		int windowHeight = mc.getWindow().getHeight();
-		double scale = mc.getWindow().getGuiScale();
+		int windowHeight = mc.getWindow().getFramebufferHeight();
+		double scale = mc.getWindow().getScaleFactor();
 		int scaledWidth = (int) (width * scale);
 		int scaledHeight = (int) (height * scale);
 

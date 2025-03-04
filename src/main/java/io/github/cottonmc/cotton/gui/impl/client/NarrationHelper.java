@@ -1,8 +1,9 @@
 package io.github.cottonmc.cotton.gui.impl.client;
 
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.text.Text;
+
 import io.github.cottonmc.cotton.gui.widget.WPanel;
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 public final class NarrationHelper {
-	public static void addNarrations(WPanel rootPanel, NarrationElementOutput builder) {
+	public static void addNarrations(WPanel rootPanel, NarrationMessageBuilder builder) {
 		List<WWidget> narratableWidgets = getAllWidgets(rootPanel)
 			.filter(WWidget::isNarratable)
 			.collect(Collectors.toList());
@@ -25,14 +26,14 @@ public final class NarrationHelper {
 
 			// replicates Screen.addElementNarrations
 			if (narratableWidgets.size() > 1) {
-				builder.add(NarratedElementType.POSITION, Component.translatable(NarrationMessages.Vanilla.SCREEN_POSITION_KEY, i + 1, childCount));
+				builder.put(NarrationPart.POSITION, Text.translatable(NarrationMessages.Vanilla.SCREEN_POSITION_KEY, i + 1, childCount));
 
 				if (child.isFocused()) {
-					builder.add(NarratedElementType.USAGE, NarrationMessages.Vanilla.COMPONENT_LIST_USAGE);
+					builder.put(NarrationPart.USAGE, NarrationMessages.Vanilla.COMPONENT_LIST_USAGE);
 				}
 			}
 
-			child.addNarrations(builder.nest());
+			child.addNarrations(builder.nextMessage());
 		}
 	}
 

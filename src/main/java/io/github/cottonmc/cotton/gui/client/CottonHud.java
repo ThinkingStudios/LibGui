@@ -1,8 +1,13 @@
 package io.github.cottonmc.cotton.gui.client;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.Window;
+
 import io.github.cottonmc.cotton.gui.widget.WWidget;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
+import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,34 +22,26 @@ public final class CottonHud {
 	private static final Set<WWidget> widgets = new HashSet<>();
 	private static final Map<WWidget, Positioner> positioners = new HashMap<>();
 
-	public static Set<WWidget> getWidgets() {
-		return widgets;
-	}
-
-	public static Map<WWidget, Positioner> getPositioners() {
-		return positioners;
-	}
-
 	static {
-//		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
-//			Window window = Minecraft.getInstance().getWindow();
-//			int hudWidth = window.getGuiScaledWidth();
-//			int hudHeight = window.getGuiScaledHeight();
-//			for (WWidget widget : widgets) {
-//				Positioner positioner = positioners.get(widget);
-//				if (positioner != null) {
-//					positioner.reposition(widget, hudWidth, hudHeight);
-//				}
-//
-//				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
-//			}
-//		});
+		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
+			Window window = MinecraftClient.getInstance().getWindow();
+			int hudWidth = window.getScaledWidth();
+			int hudHeight = window.getScaledHeight();
+			for (WWidget widget : widgets) {
+				Positioner positioner = positioners.get(widget);
+				if (positioner != null) {
+					positioner.reposition(widget, hudWidth, hudHeight);
+				}
 
-//		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-//			for (WWidget widget : widgets) {
-//				widget.tick();
-//			}
-//		});
+				widget.paint(drawContext, widget.getX(), widget.getY(), -1, -1);
+			}
+		});
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			for (WWidget widget : widgets) {
+				widget.tick();
+			}
+		});
 	}
 
 	/**

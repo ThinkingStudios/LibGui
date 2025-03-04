@@ -1,7 +1,8 @@
 package io.github.cottonmc.cotton.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
+
 import io.github.cottonmc.cotton.gui.client.ScreenDrawing;
 import io.github.cottonmc.cotton.gui.widget.data.Texture;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,7 +24,7 @@ public class WTiledSprite extends WSprite {
 	 * @param tileHeight The height of a tile
 	 * @param image      The image to tile
 	 */
-	public WTiledSprite(int tileWidth, int tileHeight, ResourceLocation image) {
+	public WTiledSprite(int tileWidth, int tileHeight, Identifier image) {
 		super(image);
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
@@ -37,7 +38,7 @@ public class WTiledSprite extends WSprite {
 	 * @param frameTime  How long in milliseconds to display for. (1 tick = 50 ms)
 	 * @param frames     The locations of the frames of the animation.
 	 */
-	public WTiledSprite(int tileWidth, int tileHeight, int frameTime, ResourceLocation... frames) {
+	public WTiledSprite(int tileWidth, int tileHeight, int frameTime, Identifier... frames) {
 		super(frameTime, frames);
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
@@ -129,7 +130,7 @@ public class WTiledSprite extends WSprite {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public void paintFrame(GuiGraphics context, int x, int y, Texture texture) {
+	public void paintFrame(DrawContext context, int x, int y, Texture texture) {
 		// Y Direction (down)
 		for (int tileYOffset = 0; tileYOffset < height; tileYOffset += tileHeight) {
 			// X Direction (right)
