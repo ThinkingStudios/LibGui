@@ -3,6 +3,7 @@ plugins {
 	id 'idea'
 	id 'maven-publish'
 	id 'net.neoforged.moddev.legacyforge' version '2.0.78'
+	id "com.hypherionmc.modutils.modpublisher" version "2.+"
 }
 
 base {
@@ -90,48 +91,16 @@ mixin {
 }
 
 dependencies {
-//	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-//	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-//	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation('org.jetbrains:annotations:24.0.1')
 
-	implementation 'org.jetbrains:annotations:24.0.1'
 	implementation(jarJar("blue.endless:jankson:1.2.3"))
+	compileOnly("blue.endless:jankson:1.2.3")
+	runtimeOnly("blue.endless:jankson:1.2.3")
 	jarJar api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-	// True: module classes are used in public API classes/methods/fields
-//	def fabricApiModules = [
-//			'fabric-api-base': true,
-//			'fabric-lifecycle-events-v1': false,
-//			'fabric-networking-api-v1': true,
-//			'fabric-rendering-v1': false,
-//	]
-//	fabricApiModules.forEach { module, api ->
-//		def dependency = fabricApi.module(module, project.fabric_version)
-//
-//		if (api) {
-//			modApi dependency
-//		} else {
-//			modImplementation dependency
-//		}
-//	}
-
-//	modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-//	include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
-
-//	include api("io.github.juuxel:libninepatch:${project.libninepatch_version}")
-
-//	modCompileOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-//		exclude group: 'net.fabricmc.fabric-api'
-//		exclude group: 'net.fabricmc', module: 'fabric-loader'
-//	}
-
 	// Test mod dependencies
 //	testModImplementation sourceSets.main.output
-//	modTestModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-//	modTestModRuntimeOnly("com.terraformersmc:modmenu:$project.modmenu_version") {
-//		exclude group: 'net.fabricmc.fabric-api'
-//		exclude group: 'net.fabricmc', module: 'fabric-loader'
-//	}
 }
 
 processResources {
@@ -161,7 +130,7 @@ tasks.withType(JavaCompile) {
 jar {
 	from "CREDITS.txt", "LICENSE"
 	manifest.attributes([
-		"MixinConfigs": "mixins.mymod.json"
+		"MixinConfigs": "mixins.libgui.json"
 	])
 }
 
@@ -185,22 +154,22 @@ javadoc {
 	exclude("**/impl/**")
 }
 
-//publisher {
-//	apiKeys.modrinth(System.getenv("MODRINTH_TOKEN"))
-//	apiKeys.curseforge(System.getenv("CURSEFORGE_TOKEN"))
-//
-//	curseID = "$project.curseforge_id"
-//	modrinthID = "$project.modrinth_id"
-//	versionType = "alpha"
-//	changelog = file("CHANGELOG.md").getText("UTF-8")
-//	displayName = "$project.version"
-//	gameVersions = ["1.20.1"]
-//	loaders = forge
-//	setVersion("$project.version")
-//	setArtifact(remapJar)
-//	addAdditionalFile(sourcesJar)
-//}
-//
+publisher {
+	apiKeys.modrinth(System.getenv("MODRINTH_TOKEN"))
+	apiKeys.curseforge(System.getenv("CURSEFORGE_TOKEN"))
+
+	curseID = "$project.curseforge_id"
+	modrinthID = "$project.modrinth_id"
+	versionType = "alpha"
+	changelog = file("CHANGELOG.md").getText("UTF-8")
+	displayName = "$project.archives_base_name"
+	gameVersions = ["1.20.1"]
+	loaders = "forge"
+	setVersion("$project.version")
+	setArtifact(reobfJar)
+	addAdditionalFile(sourcesJar)
+}
+
 // configure the maven publication
 publishing {
 	publications {

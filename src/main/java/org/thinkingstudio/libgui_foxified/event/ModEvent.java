@@ -1,15 +1,11 @@
 package org.thinkingstudio.libgui_foxified.event;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
-
 import io.github.cottonmc.cotton.gui.impl.client.LibGuiShaders;
 
 import net.minecraft.client.renderer.ShaderInstance;
-
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraftforge.client.event.RegisterShadersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

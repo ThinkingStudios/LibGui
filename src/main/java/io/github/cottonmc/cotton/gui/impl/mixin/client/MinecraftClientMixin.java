@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class MinecraftClientMixin {
 	@Inject(method = "setScreen", at = @At("HEAD"))
 	private void onSetScreen(Screen screen, CallbackInfo info) {
-		ItemUseChecker.checkSetScreen(screen);
+//		ItemUseChecker.checkSetScreen(screen);
 	}
+
 }

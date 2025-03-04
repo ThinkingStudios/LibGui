@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 public final class LibGuiShaders {
 	private static @Nullable ShaderInstance tiledRectangle;
 
-	public static void setTiledRectangle(ShaderInstance tiledRectangle) {
+	public static void setTiledRectangle(@Nullable ShaderInstance tiledRectangle) {
 		LibGuiShaders.tiledRectangle = tiledRectangle;
 	}
 
