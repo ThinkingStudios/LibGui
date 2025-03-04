@@ -1,8 +1,6 @@
 plugins {
-	id 'eclipse'
-	id 'idea'
+	id "dev.architectury.loom" version "1.9-SNAPSHOT"
 	id 'maven-publish'
-	id 'net.neoforged.moddev.legacyforge' version '2.0.78'
 	id "com.hypherionmc.modutils.modpublisher" version "2.+"
 }
 
@@ -10,69 +8,63 @@ base {
 	archivesName = project.archives_base_name
 }
 
-version = "$project.mod_version+$project.minecraft_version"
+version = "$project.mod_version+$project.upstream_version+$project.minecraft_version"
 group = project.maven_group
 
 sourceSets {
 	javadoc {
 	}
 
-//	testMod {
-//		compileClasspath += main.compileClasspath
-//		runtimeClasspath += main.runtimeClasspath
-//	}
+	/*
+	testMod {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath += main.runtimeClasspath
+	}
+	 */
 }
 
-legacyForge {
-	version = "1.20.1-47.3.0"
-//	validateAccessTransformers = true
-	parchment {
-		minecraftVersion = '1.20.1'
-		mappingsVersion = '2023.09.03'
+loom {
+	forge {
+		mixinConfigs = [
+			"mixins.libgui.json"
+		]
 	}
+	/*
+	createRemapConfigurations(sourceSets.testMod)
 
 	runs {
-		client {
+		testModClient {
 			client()
+			name = "Test Mod Client"
+			mods {
+				create("libgui_test") {
+					sourceSet(sourceSets.testMod)
+				}
+
+				create("libgui"){
+					sourceSet sourceSets.main
+				}
+			}
+			source sourceSets.testMod
 		}
-		data {
-			data()
-		}
-		server {
+
+		testModServer {
 			server()
-		}
-	}
+			name = "Test Mod Server"
+			mods {
+				create("libgui_test") {
+					sourceSet(sourceSets.testMod)
+				}
 
-	mods {
-		testproject {
-			sourceSet sourceSets.main
+				create("libgui"){
+					sourceSet sourceSets.main
+				}
+			}
+			source sourceSets.testMod
 		}
 	}
-//	createRemapConfigurations(sourceSets.testMod)
-//
-//	runs {
-//		testModClient {
-//			client()
-//			name = 'Test Mod Client'
-//			source sourceSets.testMod
-//		}
-//
-//		testModServer {
-//			server()
-//			name = 'Test Mod Server'
-//			source sourceSets.testMod
-//		}
-//	}
+	 */
 }
-
-// Work around https://github.com/FabricMC/fabric-loom/issues/890.
-//afterEvaluate {
-//	for (def config : [configurations.apiElements, configurations.runtimeElements]) {
-//		def parents = new HashSet<>(config.extendsFrom)
-//		parents.removeIf { it.name.startsWith 'modTestMod' }
-//		config.extendsFrom = parents
-//	}
-//}
 
 repositories {
 	maven {
@@ -81,32 +73,31 @@ repositories {
 			includeGroup "io.github.cottonmc"
 		}
 	}
+	maven {
+		name = 'NeoForged'
+		url = 'https://maven.neoforged.net/releases'
+	}
 	maven { url "https://jitpack.io" }
 	maven { url "https://maven.su5ed.dev/releases" }
 }
 
-mixin {
-	add sourceSets.main, 'mixins.libgui.refmap.json'
-	config 'mixins.libgui.json' // This can be done for multiple configs
-}
-
 dependencies {
-	implementation('org.jetbrains:annotations:24.0.1')
+	minecraft "net.minecraftforge:forge:${project.minecraft_version}"
+	mappings(loom.officialMojangMappings())
+	forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
-	implementation(jarJar("blue.endless:jankson:1.2.3"))
-	compileOnly("blue.endless:jankson:1.2.3")
-	runtimeOnly("blue.endless:jankson:1.2.3")
-	jarJar api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+	forgeRuntimeLibrary(implementation(include("blue.endless:jankson:1.2.3")))
 
-	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	include api("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+
 	// Test mod dependencies
-//	testModImplementation sourceSets.main.output
+	//testModImplementation sourceSets.main.output
 }
 
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("META-INF/mods.toml") {
+	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "version": project.version
 	}
 }
@@ -124,14 +115,11 @@ tasks.withType(JavaCompile) {
 	// this fixes some edge cases with special characters not displaying correctly
 	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 	options.encoding = "UTF-8"
-	options.release.set 17
+	options.release = 17
 }
 
 jar {
 	from "CREDITS.txt", "LICENSE"
-	manifest.attributes([
-		"MixinConfigs": "mixins.libgui.json"
-	])
 }
 
 def javadocBuildJar = tasks.register('javadocBuildJar', Jar) {
@@ -144,10 +132,9 @@ javadoc {
 	dependsOn javadocBuildJar
 
 	options {
-		links "https://maven.fabricmc.net/docs/yarn-$project.yarn_mappings"
 		links 'https://javadoc.io/doc/org.jetbrains/annotations/19.0.0'
 		taglets 'io.github.cottonmc.cotton.gui.jd.ExperimentalTaglet',
-				'io.github.cottonmc.cotton.gui.jd.PropertyTaglet'
+			'io.github.cottonmc.cotton.gui.jd.PropertyTaglet'
 		tagletPath javadocBuildJar.get().archiveFile.get().asFile
 	}
 
@@ -162,11 +149,11 @@ publisher {
 	modrinthID = "$project.modrinth_id"
 	versionType = "alpha"
 	changelog = file("CHANGELOG.md").getText("UTF-8")
-	displayName = "$project.archives_base_name"
+	displayName = "$project.version"
 	gameVersions = ["1.20.1"]
-	loaders = "forge"
+	loaders = loom.platform.get().id()
 	setVersion("$project.version")
-	setArtifact(reobfJar)
+	setArtifact(remapJar)
 	addAdditionalFile(sourcesJar)
 }
 
