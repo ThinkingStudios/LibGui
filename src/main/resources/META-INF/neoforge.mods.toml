@@ -17,9 +17,6 @@ Easy grid-based GUIs for NeoForge.
 '''
 logoFile = "icon.png"
 
-[[accessTransformers]]
-file="META-INF/accesstransformer.cfg"
-
 [[dependencies.libgui]]
 modId = "neoforge"
 type = "required"
@@ -33,6 +30,3 @@ type = "required"
 versionRange = "[1.21,)"
 ordering = "NONE"
 side = "BOTH"
-
-[[mixins]]
-config = "mixins.libgui.json"
