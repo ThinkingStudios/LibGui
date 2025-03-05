@@ -1,16 +1,13 @@
 package io.github.cottonmc.test;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -30,12 +27,9 @@ public class GuiItem extends Item {
 	}
 
 	private NamedScreenHandlerFactory createScreenHandlerFactory(PlayerEntity player, Hand hand) {
-		EquipmentSlot slot = switch (hand) {
-			case MAIN_HAND -> EquipmentSlot.MAINHAND;
-			case OFF_HAND -> EquipmentSlot.OFFHAND;
-		};
+		EquipmentSlot slot = hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
 		ItemStack stack = player.getStackInHand(hand);
-		return new ExtendedScreenHandlerFactory() {
+		return new NamedScreenHandlerFactory() {
 			@Override
 			public Text getDisplayName() {
 				return stack.getName();
@@ -46,10 +40,10 @@ public class GuiItem extends Item {
 				return new TestItemDescription(syncId, playerInventory, StackReference.of(player, slot));
 			}
 
-			@Override
-			public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-				buf.writeEnumConstant(slot);
-			}
+//			@Override
+//			public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+//				buf.writeEnumConstant(slot);
+//			}
 		};
 	}
 }

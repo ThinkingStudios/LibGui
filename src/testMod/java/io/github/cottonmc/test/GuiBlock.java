@@ -1,6 +1,5 @@
 package io.github.cottonmc.test;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -16,7 +15,7 @@ import net.minecraft.world.World;
 public class GuiBlock extends BlockWithEntity {
 
 	public GuiBlock() {
-		super(FabricBlockSettings.copy(Blocks.IRON_BLOCK));
+		super(Settings.copy(Blocks.IRON_BLOCK));
 	}
 	
 	@Override
