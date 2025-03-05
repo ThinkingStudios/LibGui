@@ -1,6 +1,5 @@
 package io.github.cottonmc.test.client;
 
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.text.Text;
 
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -13,6 +12,7 @@ import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.data.VerticalAlignment;
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
 
 public class ScrollBarTestGui extends LightweightGuiDescription {
 	private boolean darkMode = false;

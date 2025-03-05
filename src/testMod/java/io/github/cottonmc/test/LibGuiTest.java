@@ -4,6 +4,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.BlockItem;
@@ -17,6 +18,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import org.thinkingstudio.libgui_foxified.test.TestModRegistries;
 
 public class LibGuiTest {
 	public static final String MODID = "libgui_test";
@@ -30,30 +32,34 @@ public class LibGuiTest {
 	public static ScreenHandlerType<ReallySimpleDescription> REALLY_SIMPLE_SCREEN_HANDLER_TYPE;
 
 	public static void onInitialize() {
-		Registry.register(Registries.ITEM, id("client_gui"), new GuiItem());
+		TestModRegistries.ITEMS.register("client_gui", () -> new GuiItem());
+		//Registry.register(Registries.ITEM, id("client_gui"), new GuiItem());
 		
-		GUI_BLOCK = new GuiBlock();
-		Registry.register(Registries.BLOCK, id("gui"), GUI_BLOCK);
-		GUI_BLOCK_ITEM = new BlockItem(GUI_BLOCK, new Item.Settings());
-		Registry.register(Registries.ITEM, id("gui"), GUI_BLOCK_ITEM);
-		NO_BLOCK_INVENTORY_BLOCK = new NoBlockInventoryBlock(AbstractBlock.Settings.copy(Blocks.STONE));
-		Registry.register(Registries.BLOCK, id("no_block_inventory"), NO_BLOCK_INVENTORY_BLOCK);
-		Registry.register(Registries.ITEM, id("no_block_inventory"), new BlockItem(NO_BLOCK_INVENTORY_BLOCK, new Item.Settings()));
-		GUI_BLOCKENTITY_TYPE = BlockEntityType.Builder.create(GuiBlockEntity::new, GUI_BLOCK).build(null);
-		Registry.register(Registries.BLOCK_ENTITY_TYPE, id("gui"), GUI_BLOCKENTITY_TYPE);
-		
-		GUI_SCREEN_HANDLER_TYPE = new ScreenHandlerType<>((int syncId, PlayerInventory inventory) -> {
-			return new TestDescription(GUI_SCREEN_HANDLER_TYPE, syncId, inventory, ScreenHandlerContext.EMPTY);
-		}, FeatureSet.of(FeatureFlags.VANILLA));
-		Registry.register(Registries.SCREEN_HANDLER, id("gui"), GUI_SCREEN_HANDLER_TYPE);
-		ITEM_SCREEN_HANDLER_TYPE = IMenuTypeExtension.create((syncId, inventory, buf) -> {
-			StackReference handStack = StackReference.of(inventory.player, inventory.getStack(syncId).getEquipmentSlot());
-			return new TestItemDescription(syncId, inventory, handStack);
-		});
-		Registry.register(Registries.SCREEN_HANDLER, id("item_gui"), ITEM_SCREEN_HANDLER_TYPE);
+		GUI_BLOCK = TestModRegistries.BLOCKS.register("gui", () -> new GuiBlock()).get();
+		//Registry.register(Registries.BLOCK, id("gui"), GUI_BLOCK);
 
-		REALLY_SIMPLE_SCREEN_HANDLER_TYPE = new ScreenHandlerType<>(ReallySimpleDescription::new, FeatureSet.of(FeatureFlags.VANILLA));
-		Registry.register(Registries.SCREEN_HANDLER, id("really_simple"), REALLY_SIMPLE_SCREEN_HANDLER_TYPE);
+		GUI_BLOCK_ITEM = TestModRegistries.ITEMS.register("gui", () -> new BlockItem(GUI_BLOCK, new Item.Settings())).get();
+		//Registry.register(Registries.ITEM, id("gui"), GUI_BLOCK_ITEM);
+		NO_BLOCK_INVENTORY_BLOCK = TestModRegistries.BLOCKS.register("no_block_inventory", () -> new NoBlockInventoryBlock(AbstractBlock.Settings.copy(Blocks.STONE))).get();
+		//Registry.register(Registries.BLOCK, id("no_block_inventory"), NO_BLOCK_INVENTORY_BLOCK);
+		TestModRegistries.ITEMS.register("no_block_inventory", () -> new BlockItem(NO_BLOCK_INVENTORY_BLOCK, new Item.Settings()));
+		//Registry.register(Registries.ITEM, id("no_block_inventory"), new BlockItem(NO_BLOCK_INVENTORY_BLOCK, new Item.Settings()));
+		GUI_BLOCKENTITY_TYPE = TestModRegistries.BLOCK_ENTITY_TYPES.register("gui", () -> BlockEntityType.Builder.create(GuiBlockEntity::new, GUI_BLOCK).build(null)).get();
+		//Registry.register(Registries.BLOCK_ENTITY_TYPE, id("gui"), GUI_BLOCKENTITY_TYPE);
+		
+		GUI_SCREEN_HANDLER_TYPE = TestModRegistries.SCREEN_HANDLER_TYPES.register("gui", () -> new ScreenHandlerType<>((int syncId, PlayerInventory inventory) -> {
+			return new TestDescription(GUI_SCREEN_HANDLER_TYPE, syncId, inventory, ScreenHandlerContext.EMPTY);
+		}, FeatureSet.of(FeatureFlags.VANILLA))).get();
+		//Registry.register(Registries.SCREEN_HANDLER, id("gui"), GUI_SCREEN_HANDLER_TYPE);
+		ITEM_SCREEN_HANDLER_TYPE = TestModRegistries.SCREEN_HANDLER_TYPES.register("item_gui", () -> IMenuTypeExtension.create((syncId, inventory, buf) -> {
+			var slot = buf.readEnumConstant(EquipmentSlot.class);
+			StackReference handStack = StackReference.of(inventory.player, slot);
+			return new TestItemDescription(syncId, inventory, handStack);
+		})).get();
+		//Registry.register(Registries.SCREEN_HANDLER, id("item_gui"), ITEM_SCREEN_HANDLER_TYPE);
+
+		REALLY_SIMPLE_SCREEN_HANDLER_TYPE = TestModRegistries.SCREEN_HANDLER_TYPES.register("really_simple", () -> new ScreenHandlerType<>(ReallySimpleDescription::new, FeatureSet.of(FeatureFlags.VANILLA))).get();
+		//Registry.register(Registries.SCREEN_HANDLER, id("really_simple"), REALLY_SIMPLE_SCREEN_HANDLER_TYPE);
 
 //		Optional<ModContainer> containerOpt = FabricLoader.getInstance().getModContainer("jankson");
 //		if (containerOpt.isPresent()) {

@@ -1,6 +1,5 @@
 package io.github.cottonmc.test.client;
 
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.text.Text;
 
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
@@ -15,6 +14,7 @@ import io.github.cottonmc.cotton.gui.widget.WText;
 import io.github.cottonmc.cotton.gui.widget.WToggleButton;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
 
 public final class DarkModeTestGui extends LightweightGuiDescription {
 	private boolean darkMode = false;

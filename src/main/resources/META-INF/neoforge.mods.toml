@@ -23,14 +23,14 @@ file="META-INF/accesstransformer.cfg"
 [[dependencies.libgui]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.2,)"
+versionRange = "[21.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.libgui]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.2,)"
+versionRange = "[1.21,)"
 ordering = "NONE"
 side = "BOTH"
 
