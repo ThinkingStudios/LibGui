@@ -18,6 +18,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
 import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
+import org.thinkingstudio.libgui_foxified.network.ModNetwork;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -39,9 +40,7 @@ public class FoxifiedEventsImpl {
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
 			final PayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID);
 
-			registrar.playBidirectional(ScreenNetworkingImpl.ScreenMessage.ID, ScreenNetworkingImpl.ScreenMessage.CODEC, (payload, context) -> {
-				ScreenNetworkingImpl.handle(ServerLifecycleHooks.getCurrentServer(), context.player(), payload);
-			});
+			ModNetwork.register(registrar);
 		});
 	}
 }
