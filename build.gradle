@@ -149,7 +149,7 @@ publisher {
 	versionType = "alpha"
 	changelog = file("CHANGELOG.md").getText("UTF-8")
 	displayName = "$project.version"
-	gameVersions = ["1.20.5", "1.20.6"]
+	gameVersions = ["1.20.4"]
 	loaders = loom.platform.get().id()
 	setVersion("$project.version")
 	setArtifact(remapJar)
