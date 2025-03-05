@@ -1,7 +1,6 @@
 package org.thinkingstudio.libgui_foxified.events.impl;
 
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
-import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
@@ -14,11 +13,11 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
 import org.thinkingstudio.libgui_foxified.events.api.CoreShaderRegistrationCallback;
 import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
+import org.thinkingstudio.libgui_foxified.network.ModNetwork;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -50,9 +49,7 @@ public class FoxifiedEventsImpl {
 		modEventBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
 			final PayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID);
 
-			registrar.playBidirectional(ScreenNetworkingImpl.ScreenMessage.ID, ScreenNetworkingImpl.ScreenMessage.CODEC, (payload, context) -> {
-				ScreenNetworkingImpl.handle(ServerLifecycleHooks.getCurrentServer(), context.player(), payload);
-			});
+			ModNetwork.register(registrar);
 		});
 	}
 }
