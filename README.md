@@ -15,6 +15,8 @@ and opacity can be customized, and everything can be extended.
 
 This is how to get LibGuiFoxified into your development environment:
 
+<details><summary>CloudSmith Maven</summary> 
+
 1. Add the CloudSmith repository:
 ```groovy
 repositories {
@@ -34,8 +36,70 @@ dependencies {
 }
 ```
 The include makes Loom bundle LibGuiFoxified within your mod jar.
+</details>
+
+<details><summary>Curse Maven</summary> 
+
+1. Add the Curse Maven & Jitpack repository:
+```groovy
+repositories {
+    maven {
+        name = "Curse Maven"
+        url = "https://cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+    }
+	maven { url "https://jitpack.io" }
+}
+```
+> Note: This is not the same repositories as the one in publishing!
+> You have to add the repository to a top-level repositories block.
+
+2. Add the dependency, replacing <file_id> with your desired LibGuiFoxified file id on curseforge:
+```groovy
+dependencies {
+	modImplementation include("curse.maven:libguifoxified-1211573:<file_id>")
+	implementation("blue.endless:jankson:1.2.3")
+	implementation("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+}
+```
+The include makes Loom bundle LibGuiFoxified within your mod jar.
+</details>
+
+<details><summary>Modrinth Maven</summary> 
+
+1. Add the Modrinth Maven & Jitpack repository:
+```groovy
+repositories {
+    maven {
+        name = "Modrinth Maven"
+        url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+    }
+	maven { url "https://jitpack.io" }
+}
+```
+> Note: This is not the same repositories as the one in publishing!
+> You have to add the repository to a top-level repositories block.
+
+2. Add the dependency, replacing <version> with your desired LibGuiFoxified version on modrinth:
+```groovy
+dependencies {
+	modImplementation include("maven.modrinth:libguifoxified:<version>")
+	implementation("blue.endless:jankson:1.2.3")
+	implementation("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
+}
+```
+The include makes Loom bundle LibGuiFoxified within your mod jar.
+</details>
+
 
 ## Docs
+**Please note that the original mod (LibGui) wiki is based on the fabric development environment!**
+
 See the [LibGui wiki](https://github.com/CottonMC/LibGui/wiki)
 
 And for code examples:
