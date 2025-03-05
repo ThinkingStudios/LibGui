@@ -9,23 +9,18 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.function.Supplier;
 
-public class LibGuiPacket {
-	private int syncId;
-	private Identifier message;
-	private PacketByteBuf rest;
-	public LibGuiPacket(int syncId, Identifier message, PacketByteBuf rest) {
-		this.syncId = syncId;
-		this.message = message;
-		this.rest = rest;
+public record LibGuiPacket(int syncId, Identifier message, PacketByteBuf rest) {
+
+	public LibGuiPacket(PacketByteBuf buf) {
+		this(buf.readVarInt(), buf.readIdentifier(), buf);
 	}
-	public static void encode(LibGuiPacket packet, PacketByteBuf friendlyByteBuf){
-		friendlyByteBuf.writeVarInt(packet.syncId);
-		friendlyByteBuf.writeIdentifier(packet.message);
-		friendlyByteBuf.writeBytes(packet.rest);
+
+	public static void write(LibGuiPacket packet, PacketByteBuf buf){
+		buf.writeVarInt(packet.syncId);
+		buf.writeIdentifier(packet.message);
+		buf.writeBytes(packet.rest);
 	}
-	public static LibGuiPacket decode(PacketByteBuf friendlyByteBuf){
-		return new LibGuiPacket(friendlyByteBuf.readVarInt(), friendlyByteBuf.readIdentifier(), friendlyByteBuf);
-	}
+
 	public static boolean handle(LibGuiPacket packet, Supplier<NetworkEvent.Context> ctx){
 		ctx.get().enqueueWork(()-> ScreenNetworkingImpl.handle(ServerLifecycleHooks.getCurrentServer(), ctx.get().getSender(), packet.rest));
 		return true;
