@@ -18,7 +18,7 @@ public class GuiBlockEntity extends BlockEntity implements ImplementedInventory,
 	DefaultedList<ItemStack> items =  DefaultedList.ofSize(INVENTORY_SIZE, ItemStack.EMPTY);
 	
 	public GuiBlockEntity(BlockPos pos, BlockState state) {
-		super(LibGuiTest.GUI_BLOCKENTITY_TYPE, pos, state);
+		super(LibGuiTest.GUI_BLOCKENTITY_TYPE.get(), pos, state);
 	}
 
 	@Override

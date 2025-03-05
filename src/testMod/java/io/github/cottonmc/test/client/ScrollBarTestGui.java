@@ -1,6 +1,5 @@
 package io.github.cottonmc.test.client;
 
-import net.fabricmc.fabric.api.util.TriState;
 
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WPlainPanel;
@@ -8,6 +7,7 @@ import io.github.cottonmc.cotton.gui.widget.WScrollBar;
 import io.github.cottonmc.cotton.gui.widget.WToggleButton;
 import io.github.cottonmc.cotton.gui.widget.data.Axis;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+import org.thinkingstudio.libgui_foxified.base.util.TriState;
 
 public class ScrollBarTestGui extends LightweightGuiDescription {
 	private boolean darkMode = false;

@@ -15,12 +15,10 @@ sourceSets {
 	javadoc {
 	}
 
-	/*
 	testMod {
 		compileClasspath += main.compileClasspath
 		runtimeClasspath += main.runtimeClasspath
 	}
-	 */
 }
 
 loom {
@@ -29,7 +27,6 @@ loom {
 			"mixins.libgui.json"
 		]
 	}
-	/*
 	createRemapConfigurations(sourceSets.testMod)
 
 	runs {
@@ -63,7 +60,6 @@ loom {
 			source sourceSets.testMod
 		}
 	}
-	 */
 }
 
 repositories {
@@ -88,7 +84,7 @@ dependencies {
 	forgeRuntimeLibrary("com.github.TexBlock:LibNinePatch:master-SNAPSHOT")
 
 	// Test mod dependencies
-	//testModImplementation sourceSets.main.output
+	testModImplementation sourceSets.main.output
 }
 
 processResources {
