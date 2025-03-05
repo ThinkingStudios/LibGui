@@ -32,7 +32,9 @@ loom {
 	runs {
 		testModClient {
 			client()
-			name = "Test Mod Client"
+			forgeTemplate "client"
+			ideConfigGenerated true
+			name = "TestModClient"
 			mods {
 				create("libgui_test") {
 					sourceSet(sourceSets.testMod)
@@ -47,7 +49,8 @@ loom {
 
 		testModServer {
 			server()
-			name = "Test Mod Server"
+			name = "TestModServer"
+			ideConfigGenerated true
 			mods {
 				create("libgui_test") {
 					sourceSet(sourceSets.testMod)

@@ -38,6 +38,6 @@ public class GuiBlockEntity extends BlockEntity implements ImplementedInventory,
 
 	@Override
 	public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-		return new TestDescription(LibGuiTest.GUI_SCREEN_HANDLER_TYPE, syncId, inv, ScreenHandlerContext.create(world, pos));
+		return new TestDescription(LibGuiTest.GUI_SCREEN_HANDLER_TYPE.get(), syncId, inv, ScreenHandlerContext.create(world, pos));
 	}
 }

@@ -27,7 +27,7 @@ public class TestItemDescription extends ItemSyncedGuiDescription {
 	private int b = 0;
 
 	public TestItemDescription(int syncId, PlayerInventory playerInventory, StackReference owner) {
-		super(LibGuiTest.ITEM_SCREEN_HANDLER_TYPE, syncId, playerInventory, owner);
+		super(LibGuiTest.ITEM_SCREEN_HANDLER_TYPE.get(), syncId, playerInventory, owner);
 		WGridPanel root = new WGridPanel(22);
 		root.setInsets(Insets.ROOT_PANEL);
 		this.setRootPanel(root);

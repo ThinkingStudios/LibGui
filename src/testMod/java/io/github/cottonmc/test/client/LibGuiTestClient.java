@@ -18,7 +18,6 @@ import io.github.cottonmc.test.LibGuiTest;
 import io.github.cottonmc.test.ReallySimpleDescription;
 import io.github.cottonmc.test.TestDescription;
 import io.github.cottonmc.test.TestItemDescription;
-import net.minecraftforge.client.ClientCommandSourceStack;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -31,17 +30,17 @@ public class LibGuiTestClient {
 
 	public static void onInitializeClient() {
 		HandledScreens.<TestDescription, CottonInventoryScreen<TestDescription>>register(
-				LibGuiTest.GUI_SCREEN_HANDLER_TYPE,
+				LibGuiTest.GUI_SCREEN_HANDLER_TYPE.get(),
 				CottonInventoryScreen::new
 		);
 
 		HandledScreens.<ReallySimpleDescription, CottonInventoryScreen<ReallySimpleDescription>>register(
-				LibGuiTest.REALLY_SIMPLE_SCREEN_HANDLER_TYPE,
+				LibGuiTest.REALLY_SIMPLE_SCREEN_HANDLER_TYPE.get(),
 				CottonInventoryScreen::new
 		);
 
 		HandledScreens.<TestItemDescription, CottonInventoryScreen<TestItemDescription>>register(
-				LibGuiTest.ITEM_SCREEN_HANDLER_TYPE,
+				LibGuiTest.ITEM_SCREEN_HANDLER_TYPE.get(),
 				CottonInventoryScreen::new
 		);
 
