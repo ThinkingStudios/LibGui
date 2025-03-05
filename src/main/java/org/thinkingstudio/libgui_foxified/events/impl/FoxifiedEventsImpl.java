@@ -1,7 +1,6 @@
 package org.thinkingstudio.libgui_foxified.events.impl;
 
 import io.github.cottonmc.cotton.gui.impl.LibGuiCommon;
-import io.github.cottonmc.cotton.gui.impl.ScreenNetworkingImpl;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
@@ -18,8 +17,7 @@ import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.thinkingstudio.libgui_foxified.events.api.ClientTickEvents;
 import org.thinkingstudio.libgui_foxified.events.api.CoreShaderRegistrationCallback;
 import org.thinkingstudio.libgui_foxified.events.api.HudRenderCallback;
-import org.thinkingstudio.libgui_foxified.network.LibGuiC2SPacket;
-import org.thinkingstudio.libgui_foxified.network.LibGuiS2CPacket;
+import org.thinkingstudio.libgui_foxified.network.ModNetwork;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -50,14 +48,9 @@ public class FoxifiedEventsImpl {
 
 	public static void registerCommonEvents(IEventBus modEventBus) {
 		modEventBus.addListener(RegisterPayloadHandlerEvent.class, event -> {
-			final IPayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID).versioned(LibGuiCommon.MOD_ID);
+			final IPayloadRegistrar registrar = event.registrar(LibGuiCommon.MOD_ID);
 
-			registrar.play(ScreenNetworkingImpl.SCREEN_MESSAGE_C2S, LibGuiC2SPacket::new, handler -> {
-				handler.server(LibGuiC2SPacket::handle);
-			});
-			registrar.play(ScreenNetworkingImpl.SCREEN_MESSAGE_S2C, LibGuiS2CPacket::new, handler -> {
-				handler.client(LibGuiS2CPacket::handle);
-			});
+			ModNetwork.register(registrar);
 		});
 	}
 }

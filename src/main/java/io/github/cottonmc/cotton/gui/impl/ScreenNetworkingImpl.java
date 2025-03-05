@@ -10,9 +10,8 @@ import io.github.cottonmc.cotton.gui.networking.NetworkSide;
 import io.github.cottonmc.cotton.gui.networking.ScreenNetworking;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.thinkingstudio.libgui_foxified.network.LibGuiPacket;
 import org.thinkingstudio.libgui_foxified.network.PacketByteBufs;
-import org.thinkingstudio.libgui_foxified.network.LibGuiC2SPacket;
-import org.thinkingstudio.libgui_foxified.network.LibGuiS2CPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,9 +63,9 @@ public class ScreenNetworkingImpl implements ScreenNetworking {
 		writer.accept(buf);
 
 		if (side == NetworkSide.SERVER) {
-			description.getPacketSender().sendToPlayer(new LibGuiS2CPacket(description.syncId, message, buf));
+			description.getPacketSender().sendToPlayer(new LibGuiPacket(description.syncId, message, buf));
 		} else if (side == NetworkSide.CLIENT) {
-			description.getPacketSender().sendToServer(new LibGuiC2SPacket(description.syncId, message, buf));
+			description.getPacketSender().sendToServer(new LibGuiPacket(description.syncId, message, buf));
 		}
 	}
 
