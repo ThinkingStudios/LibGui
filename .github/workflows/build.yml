@@ -19,3 +19,8 @@ jobs:
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build --stacktrace
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: Artifacts
+            path: ${{ github.workspace }}/build/libs
