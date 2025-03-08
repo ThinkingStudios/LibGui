@@ -1,2 +1,2 @@
 ## Changelog
-- port to 1.20.6 NeoForge
+- fix maven
