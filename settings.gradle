@@ -10,5 +10,3 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-
-rootProject.name = 'LibGui'
